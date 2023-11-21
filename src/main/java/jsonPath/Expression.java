@@ -1,11 +1,11 @@
 package jsonPath;
 
-import antlr.JsonPathBaseVisitor;
 import antlr.JsonPathParser;
 import com.google.gson.JsonElement;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
+import java.util.function.BiPredicate;
 
 public class Expression extends BaseModel<Expression> {
 
@@ -22,7 +22,10 @@ public class Expression extends BaseModel<Expression> {
         GREATER_OR_EQUALS(BaseModel.getLiteralValue(JsonPathParser.GREATER_OR_EQUALS));
 
         private String str;
-        CompareType(String str) {this.str = str;}
+
+        CompareType(String str) {
+            this.str = str;
+        }
 
         public static CompareType getCompareType(String str) {
             for (CompareType cur : values()) {
@@ -40,11 +43,17 @@ public class Expression extends BaseModel<Expression> {
     private String stringValue;
 
     private enum FunctionForCompare {
-        REG("reg"),
-        CONTAINS("contains");
+        REG("reg", (left, right) -> left.matches(right.substring(5, right.length() - 2))),
+        CONTAINS("contains", (left, right) -> left.contains(right.substring(10, right.length() - 2)));
 
         private String str;
-        FunctionForCompare(String str) {this.str = str;}
+
+        private BiPredicate<String, String> func;
+
+        FunctionForCompare(String str, BiPredicate<String, String> func) {
+            this.str = str;
+            this.func = func;
+        }
 
         public static FunctionForCompare getFunctionForCompare(String str) {
             for (FunctionForCompare cur : values()) {
@@ -56,24 +65,26 @@ public class Expression extends BaseModel<Expression> {
     }
 
     private FunctionForCompare functionForCompare;
-    private List<TerminalNode> back;
+    private List<TerminalNode> back = null;
 
     private JsonPathElement jsonPathElementSecond;
 
 
     @Override
     public Expression visitExpr(JsonPathParser.ExprContext ctx) {
-        jsonPathElement = new JsonPathElement().visit(ctx.getChild(0));
+        jsonPathElement = new JsonPathElement();
         jsonPathElement.prevJsonPathElement = this.prevJsonPathElement;
+        jsonPathElement.visit(ctx.getChild(0));
         if (ctx.getChildCount() > 1) {
             compareType = CompareType.getCompareType(ctx.getChild(1).getText());
 
-            if (ctx.getChildCount() == 4) {
+            if (ctx.BACK() != null && !ctx.BACK().isEmpty()) {
                 back = ctx.BACK();
-                jsonPathElementSecond = new JsonPathElement().visit(ctx.getChild(3));
+                jsonPathElementSecond = new JsonPathElement();
                 jsonPathElementSecond.prevJsonPathElement = this.prevJsonPathElement;
-            } else {
+                jsonPathElementSecond.visit(ctx.jsonPathElement(1));
 
+            } else {
                 try {
                     longValue = Long.valueOf(ctx.getChild(2).getText());
                 } catch (Exception eInteger) {
@@ -95,6 +106,9 @@ public class Expression extends BaseModel<Expression> {
         String leftValue = convertJsonToString(jsonPathElement.read(curJson));
         Boolean result = false;
 
+        if (back != null)
+            stringValue = runBack();
+
         try {
             if (doubleValue != null) {
                 result = switch (compareType) {
@@ -105,24 +119,23 @@ public class Expression extends BaseModel<Expression> {
                     case GREATER -> Double.parseDouble(leftValue) > doubleValue;
                     case GREATER_OR_EQUALS -> Double.parseDouble(leftValue) >= doubleValue;
                 };
-            }
-            if (longValue != null) {
+            } else if (longValue != null) {
                 result = switch (compareType) {
-                    case EQUALS -> Integer.valueOf(leftValue).equals(longValue);
-                    case NOT_EQUALS -> !Integer.valueOf(leftValue).equals(longValue);
-                    case LESS -> Integer.parseInt(leftValue) < longValue;
-                    case LESS_OR_EQUALS -> Integer.parseInt(leftValue) <= longValue;
-                    case GREATER -> Integer.parseInt(leftValue) > longValue;
-                    case GREATER_OR_EQUALS -> Integer.parseInt(leftValue) >= longValue;
+                    case EQUALS -> Long.valueOf(leftValue).equals(longValue);
+                    case NOT_EQUALS -> !Long.valueOf(leftValue).equals(longValue);
+                    case LESS -> Long.parseLong(leftValue) < longValue;
+                    case LESS_OR_EQUALS -> Long.parseLong(leftValue) <= longValue;
+                    case GREATER -> Long.parseLong(leftValue) > longValue;
+                    case GREATER_OR_EQUALS -> Long.parseLong(leftValue) >= longValue;
                 };
-            }
-            if (stringValue != null) {
+            } else if (stringValue != null) {
                 result = switch (compareType) {
-                    case EQUALS -> leftValue.equals(stringValue);
-                    case NOT_EQUALS -> !leftValue.equals(stringValue);
+                    case EQUALS -> (functionForCompare != null) ? functionForCompare.func.test(leftValue, stringValue) : leftValue.equals(stringValue);
+                    case NOT_EQUALS -> (functionForCompare != null) ? !functionForCompare.func.test(leftValue, stringValue) : !leftValue.equals(stringValue);
                     default -> result;
                 };
-            }
+            } else
+                result = !leftValue.equals("null");
         } catch (Exception e) {
 /*            String message = null;
             if (longValue != null)
@@ -134,6 +147,20 @@ public class Expression extends BaseModel<Expression> {
             throw new JsonPathException(message, jsonPath, prevJsonPathElement);*/
             return false;
         }
+        return result;
+    }
+
+    private String runBack() {
+        JsonPathElement curJsonPathElement = this.prevJsonPathElement;
+        for (int i = 0; i < back.size(); i++)
+            curJsonPathElement = curJsonPathElement.prevJsonPathElement;
+        JsonPathElement saveNextJsonPathElement = curJsonPathElement.getNextJsonPathElement();
+        curJsonPathElement.replaceNextJsonPathElement(jsonPathElementSecond);
+        JsonPathElement rootJsonPathElement = curJsonPathElement;
+        while (rootJsonPathElement.prevJsonPathElement != null)
+            rootJsonPathElement = rootJsonPathElement.prevJsonPathElement;
+        String result = convertJsonToString(rootJsonPathElement.read(immutableJson));
+        curJsonPathElement.replaceNextJsonPathElement(saveNextJsonPathElement);
         return result;
     }
 }

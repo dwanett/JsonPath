@@ -25,8 +25,9 @@ public class Filter extends BaseModel<Filter> {
     public Filter visitFilter(JsonPathParser.FilterContext ctx) {
         if (ctx.MATCHTYPE() != null)
             modificator = Modificators.getModificators(ctx.MATCHTYPE().getText());
-        condition = new Condition().visit(ctx.condition());
+        condition = new Condition();
         condition.prevJsonPathElement = this.prevJsonPathElement;
+        condition = condition.visit(ctx.condition());
         return this;
     }
 

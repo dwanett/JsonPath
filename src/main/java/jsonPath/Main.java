@@ -1,36 +1,18 @@
 package jsonPath;
 
-import antlr.JsonPathLexer;
-import antlr.JsonPathParser;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class Main {
 
     public static void main(String[] args) {
-        String str = "author.holding[(aaa == \"d\" && {bbb == \"d\" && ccc == \"d\"} && ddd == \"d\" && eee == \"d\")].epkId";
-        JsonPathLexer lexer = new JsonPathLexer(CharStreams.fromString(str));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        JsonPathParser parser = new JsonPathParser(tokens);
-        ParseTree tree = parser.jsonPath();
-        JsonPath jsonPath = new JsonPath();
-        jsonPath.visit(tree);
-
-
-
         JsonElement json = new Gson().fromJson("{\n" +
                 "    \"author\": {\n" +
                 "        \"positionId\": \"123456789\",\n" +
                 "        \"employeeNumber\": \"12345\",\n" +
                 "        \"holding\": [\n" +
                 "            {\n" +
-                "                \"epkId\": \"88888888888888888888888\",\n" +
+                "                \"epkId\": \"99999999999999999999999\",\n" +
                 "                \"crmId\": \"2222\",\n" +
                 "                \"client\": [\n" +
                 "                    {\n" +
@@ -43,7 +25,7 @@ public class Main {
                 "                    },\n" +
                 "                    {\n" +
                 "                        \"epkId\": \"4444444444444444444\",\n" +
-                "                        \"crmId\": \"1-11FUEJ06\"\n" +
+                "                        \"crmId\": \"12345\"\n" +
                 "                    },\n" +
                 "                    {\n" +
                 "                        \"epkId\": \"6666666666666666666\",\n" +
@@ -56,12 +38,12 @@ public class Main {
                 "                ]\n" +
                 "            },\n" +
                 "            {\n" +
-                "                \"epkId\": \"99999999999999999999999\",\n" +
+                "                \"epkId\": \"88888888888888888888888\",\n" +
                 "                \"crmId\": \"2222\",\n" +
                 "                \"client\": [\n" +
                 "                    {\n" +
                 "                        \"epkId\": \"1111111111111111111\",\n" +
-                "                        \"crmId\": \"1-11FUEJ06\"\n" +
+                "                        \"crmId\": \"12345\"\n" +
                 "                    },\n" +
                 "                    {\n" +
                 "                        \"epkId\": \"3333333333333333333\",\n" +
@@ -85,6 +67,6 @@ public class Main {
                 "    }\n" +
                 "}", JsonElement.class);
 
-        System.out.println(jsonPath.getValue(json));
+        System.out.println(JsonPath.getValue(json, "author.holding[(client[(crmId == ../../employeeNumber)])].client.epkId"));
     }
 }

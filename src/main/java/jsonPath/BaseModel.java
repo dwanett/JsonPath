@@ -13,7 +13,7 @@ public class BaseModel<T> extends JsonPathBaseVisitor<T> {
 
     protected static Stack<JsonElement> results = new Stack<>();
 
-    protected JsonPath jsonPath;
+    protected static JsonPathAll jsonPath;
 
     protected JsonPathElement prevJsonPathElement;
 
