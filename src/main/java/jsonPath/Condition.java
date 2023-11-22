@@ -15,9 +15,9 @@ public class Condition extends BaseModel<Condition> {
     private enum LogicExpression {
         AND(BaseModel.getLiteralValue(JsonPathParser.AND), (l, r) -> l & r),
         OR(BaseModel.getLiteralValue(JsonPathParser.OR), (l, r) -> l | r);
-        private String str;
+        private final String str;
 
-        IntBinaryOperator func;
+        private final IntBinaryOperator func;
         LogicExpression(String str, IntBinaryOperator func) {
             this.str = str;
             this.func = func;
@@ -58,12 +58,12 @@ public class Condition extends BaseModel<Condition> {
     public Integer filter(JsonElement curJson) {
         Integer result = 0;
 
-        for (int i = 0; i < expressionsAndConditions.size(); i++) {
+        for (BaseModel expressionsAndCondition : expressionsAndConditions) {
             result = result << 1;
-            if (expressionsAndConditions.get(i) instanceof Expression)
-                result |= ((Expression) expressionsAndConditions.get(i)).compare(curJson) ? 1 : 0;
-            else if (expressionsAndConditions.get(i) instanceof Condition)
-                result |= ((Condition) expressionsAndConditions.get(i)).filter(curJson);
+            if (expressionsAndCondition instanceof Expression)
+                result |= ((Expression) expressionsAndCondition).compare(curJson) ? 1 : 0;
+            else if (expressionsAndCondition instanceof Condition)
+                result |= ((Condition) expressionsAndCondition).filter(curJson);
         }
 
         for (LogicExpression cur : LogicExpression.values())
@@ -73,14 +73,15 @@ public class Condition extends BaseModel<Condition> {
     }
 
      private Integer runLogicOperator(Integer startBit, LogicExpression curLogicExpression) {
-        Integer tmp = 0;
+        int tmp = 0;
 
         if (!logicExpressions.contains(curLogicExpression))
             return startBit;
 
         for (int i = 0; i < logicExpressions.size(); i++) {
              if (logicExpressions.get(i) == curLogicExpression)
-                 tmp |= curLogicExpression.func.applyAsInt(startBit >> logicExpressions.size() - i, startBit >> logicExpressions.size() - (i + 1));
+                 tmp |= curLogicExpression.func.applyAsInt((startBit >> logicExpressions.size() - i) & 1,
+                         (startBit >> logicExpressions.size() - (i + 1)) & 1);
              else if (logicExpressions.get(i).ordinal() == curLogicExpression.ordinal() + 1)
                  tmp <<= 1;
          }

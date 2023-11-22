@@ -43,7 +43,7 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
     }
 
     public JsonElement read(JsonElement curJson) {
-        if (filter != null) {
+        if (filter != null && curJson != null) {
             JsonElement element = curJson.getAsJsonObject().get(name);
             if (!(element instanceof JsonArray))
                 return null;
@@ -59,12 +59,10 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
         }
 
         curJson = getJsonElement(curJson);
-        if (nextJsonPathElement == null)
-            results.push(curJson);
-        else {
-            if (indexArray == null || !indexArray.equals(BaseModel.getLiteralValue(JsonPathParser.ALLINDEX)))
+        if ((indexArray == null || !indexArray.equals(BaseModel.getLiteralValue(JsonPathParser.ALLINDEX))) && nextJsonPathElement != null)
                 results.push(nextJsonPathElement.read(curJson));
-        }
+        else
+            results.push(curJson);
         return results.pop();
     }
 
@@ -84,7 +82,7 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
                 return jsonArray;
             } else if (nextJsonPathElement != null || indexArray != null) {
                 try {
-                    return json.getAsJsonArray().get(indexArray != null ? Integer.valueOf(indexArray) : 0);
+                    return json.getAsJsonArray().get(indexArray != null ? Integer.parseInt(indexArray) : 0);
                 } catch (Exception e) {
                     results.push(null);
                     return null;
