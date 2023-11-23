@@ -21,7 +21,23 @@ public class Main {
                 "          \"pages\": 1225,\n" +
                 "          \"language\": \"Russian\",\n" +
                 "          \"available_copies\": 5\n" +
-                "        }\n" +
+                "        },\n" +
+                "        \"categories\": [\n" +
+                "          \"classic\",\n" +
+                "          \"historical\"\n" +
+                "        ],\n" +
+                "        \"reviews\": [\n" +
+                "          {\n" +
+                "            \"user\": \"Alex\",\n" +
+                "            \"rating\": 5,\n" +
+                "            \"comment\": \"A true masterpiece.\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"user\": \"Anna\",\n" +
+                "            \"rating\": 4,\n" +
+                "            \"comment\": \"A bit lengthy, but beautiful.\"\n" +
+                "          }\n" +
+                "        ]\n" +
                 "      },\n" +
                 "      {\n" +
                 "        \"title\": \"Crime and Punishment\",\n" +
@@ -33,7 +49,23 @@ public class Main {
                 "          \"pages\": 671,\n" +
                 "          \"language\": \"Russian\",\n" +
                 "          \"available_copies\": 3\n" +
-                "        }\n" +
+                "        },\n" +
+                "        \"categories\": [\n" +
+                "          \"classic\",\n" +
+                "          \"psychological\"\n" +
+                "        ],\n" +
+                "        \"reviews\": [\n" +
+                "          {\n" +
+                "            \"user\": \"Sergei\",\n" +
+                "            \"rating\": 5,\n" +
+                "            \"comment\": \"Deep and thought-provoking.\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"user\": \"Elena\",\n" +
+                "            \"rating\": 4,\n" +
+                "            \"comment\": \"Captivating plot.\"\n" +
+                "          }\n" +
+                "        ]\n" +
                 "      },\n" +
                 "      {\n" +
                 "        \"title\": \"To Kill a Mockingbird\",\n" +
@@ -45,7 +77,23 @@ public class Main {
                 "          \"pages\": 281,\n" +
                 "          \"language\": \"English\",\n" +
                 "          \"available_copies\": 7\n" +
-                "        }\n" +
+                "        },\n" +
+                "        \"categories\": [\n" +
+                "          \"classic\",\n" +
+                "          \"social justice\"\n" +
+                "        ],\n" +
+                "        \"reviews\": [\n" +
+                "          {\n" +
+                "            \"user\": \"Mary\",\n" +
+                "            \"rating\": 5,\n" +
+                "            \"comment\": \"Important and impactful.\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"user\": \"John\",\n" +
+                "            \"rating\": 4,\n" +
+                "            \"comment\": \"A timeless classic.\"\n" +
+                "          }\n" +
+                "        ]\n" +
                 "      },\n" +
                 "      {\n" +
                 "        \"title\": \"1984\",\n" +
@@ -57,7 +105,23 @@ public class Main {
                 "          \"pages\": 328,\n" +
                 "          \"language\": \"English\",\n" +
                 "          \"available_copies\": 4\n" +
-                "        }\n" +
+                "        },\n" +
+                "        \"categories\": [\n" +
+                "          \"dystopian\",\n" +
+                "          \"political\"\n" +
+                "        ],\n" +
+                "        \"reviews\": [\n" +
+                "          {\n" +
+                "            \"user\": \"Peter\",\n" +
+                "            \"rating\": 5,\n" +
+                "            \"comment\": \"Frighteningly relevant.\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"user\": \"Sophia\",\n" +
+                "            \"rating\": 4,\n" +
+                "            \"comment\": \"A must-read for all.\"\n" +
+                "          }\n" +
+                "        ]\n" +
                 "      }\n" +
                 "    ],\n" +
                 "    \"readers\": [\n" +
@@ -85,6 +149,6 @@ public class Main {
                 "  }\n" +
                 "}", JsonElement.class);
 
-        System.out.println(JsonPath.getValue(json, "library.books[(title == reg(\"[1-9]*\"))].title"));
+        System.out.println(JsonPath.getValue(json, "library.books[1]"));
     }
 }
