@@ -36,11 +36,7 @@ public class Expression extends BaseModel<Expression> {
         }
     }
 
-    private Double doubleValue;
-
-    private Long longValue;
-
-    private String stringValue;
+    private TypeValueForCompare typeValueForCompare;
 
     private enum FunctionForCompare {
         REG("reg", (left, right) -> left.matches(right.substring(5, right.length() - 2))),
@@ -83,18 +79,29 @@ public class Expression extends BaseModel<Expression> {
                 jsonPathElementSecond = new JsonPathElement();
                 jsonPathElementSecond.prevJsonPathElement = this.prevJsonPathElement;
                 jsonPathElementSecond.visit(ctx.jsonPathElement(1));
+                typeValueForCompare = new StringValue("");
 
             } else {
                 try {
-                    longValue = Long.valueOf(ctx.getChild(2).getText());
-                } catch (Exception eInteger) {
+                    typeValueForCompare = new LongValue(Long.valueOf(ctx.getChild(2).getText()));
+                } catch (Exception eLong) {
                     try {
-                        doubleValue = Double.valueOf(ctx.getChild(2).getText());
+                        typeValueForCompare = new DoubleValue(Double.valueOf(ctx.getChild(2).getText()));
                     } catch (Exception eDouble) {
-                        stringValue = ctx.getChild(2).getText();
-                        functionForCompare = FunctionForCompare.getFunctionForCompare(stringValue);
-                        if (functionForCompare == null)
-                            stringValue = stringValue.substring(1, ctx.getChild(2).getText().length() - 1);
+                        String rightValue = ctx.getChild(2).getText();
+                        typeValueForCompare = new StringValue(rightValue);
+
+                        if (rightValue.equals("null"))
+                            typeValueForCompare = new NullValue(rightValue);
+                        else if (rightValue.equals("empty"))
+                            typeValueForCompare = new EmptyValue(rightValue);
+                        else {
+                            functionForCompare = FunctionForCompare.getFunctionForCompare(rightValue);
+                            if (functionForCompare == null) {
+                                rightValue = rightValue.substring(1, ctx.getChild(2).getText().length() - 1);
+                                typeValueForCompare = new StringValue(rightValue);
+                            }
+                        }
                     }
                 }
             }
@@ -102,45 +109,12 @@ public class Expression extends BaseModel<Expression> {
         return this;
     }
 
-    public Boolean compare(JsonElement curJson) {
-        String leftValue = convertJsonToString(jsonPathElement.read(curJson));
-        Boolean result = false;
-
-        if (back != null)
-            stringValue = runBack();
-
+    public boolean compare(JsonElement curJson) {
         try {
-            if (doubleValue != null) {
-                switch (compareType) {
-                    case EQUALS : result = Double.valueOf(leftValue).equals(doubleValue); break;
-                    case NOT_EQUALS : result = !Double.valueOf(leftValue).equals(doubleValue); break;
-                    case LESS : result = Double.parseDouble(leftValue) < doubleValue; break;
-                    case LESS_OR_EQUALS : result = Double.parseDouble(leftValue) <= doubleValue; break;
-                    case GREATER : result = Double.parseDouble(leftValue) > doubleValue; break;
-                    case GREATER_OR_EQUALS : result = Double.parseDouble(leftValue) >= doubleValue; break;
-
-                };
-            } else if (longValue != null) {
-                switch (compareType) {
-                    case EQUALS : result = Long.valueOf(leftValue).equals(longValue); break;
-                    case NOT_EQUALS : result = !Long.valueOf(leftValue).equals(longValue); break;
-                    case LESS : result = Long.parseLong(leftValue) < longValue; break;
-                    case LESS_OR_EQUALS : result = Long.parseLong(leftValue) <= longValue; break;
-                    case GREATER : result = Long.parseLong(leftValue) > longValue; break;
-                    case GREATER_OR_EQUALS : result = Long.parseLong(leftValue) >= longValue; break;
-                };
-            } else if (stringValue != null) {
-                switch (compareType) {
-                    case EQUALS : result = (functionForCompare != null) ? functionForCompare.func.test(leftValue, stringValue) : leftValue.equals(stringValue); break;
-                    case NOT_EQUALS : result = (functionForCompare != null) ? !functionForCompare.func.test(leftValue, stringValue) : !leftValue.equals(stringValue); break;
-                    default : result = false;
-                };
-            } else
-                result = !leftValue.equals("null");
+            return typeValueForCompare.runCheck(jsonPathElement.read(curJson));
         } catch (Exception e) {
             return false;
         }
-        return result;
     }
 
     private String runBack() {
@@ -155,5 +129,134 @@ public class Expression extends BaseModel<Expression> {
         String result = convertJsonToString(rootJsonPathElement.read(immutableJson));
         curJsonPathElement.replaceNextJsonPathElement(saveNextJsonPathElement);
         return result;
+    }
+
+    private abstract static class TypeValueForCompare<T>{
+
+        protected T rightValue;
+
+        TypeValueForCompare(T rightValue) {
+            this.rightValue = rightValue;
+        }
+        abstract boolean runCheck(JsonElement leftValue);
+    }
+
+    class DoubleValue extends TypeValueForCompare<Double> {
+
+        public DoubleValue(Double rightValue) {
+            super(rightValue);
+        }
+        @Override
+        boolean runCheck(JsonElement leftValue) {
+            boolean result = false;
+
+            String strLeftValue = convertJsonToString(leftValue);
+
+            switch (compareType) {
+                case EQUALS : result = Double.valueOf(strLeftValue).equals(rightValue); break;
+                case NOT_EQUALS : result = !Double.valueOf(strLeftValue).equals(rightValue); break;
+                case LESS : result = Double.parseDouble(strLeftValue) < rightValue; break;
+                case LESS_OR_EQUALS : result = Double.parseDouble(strLeftValue) <= rightValue; break;
+                case GREATER : result = Double.parseDouble(strLeftValue) > rightValue; break;
+                case GREATER_OR_EQUALS : result = Double.parseDouble(strLeftValue) >= rightValue; break;
+
+            }
+
+            return result;
+        }
+    }
+
+    class LongValue extends TypeValueForCompare<Long> {
+
+        public LongValue(Long rightValue) {
+            super(rightValue);
+        }
+
+        @Override
+        boolean runCheck(JsonElement leftValue) {
+            boolean result = false;
+
+            String strLeftValue = convertJsonToString(leftValue);
+
+            switch (compareType) {
+                case EQUALS : result = Long.valueOf(strLeftValue).equals(rightValue); break;
+                case NOT_EQUALS : result = !Long.valueOf(strLeftValue).equals(rightValue); break;
+                case LESS : result = Long.parseLong(strLeftValue) < rightValue; break;
+                case LESS_OR_EQUALS : result = Long.parseLong(strLeftValue) <= rightValue; break;
+                case GREATER : result = Long.parseLong(strLeftValue) > rightValue; break;
+                case GREATER_OR_EQUALS : result = Long.parseLong(strLeftValue) >= rightValue; break;
+            }
+
+            return result;
+        }
+    }
+
+    class StringValue extends TypeValueForCompare<String> {
+
+        public StringValue(String rightValue) {
+            super(rightValue);
+        }
+        @Override
+        boolean runCheck(JsonElement leftValue) {
+            boolean result = false;
+
+            if (back != null)
+                rightValue = runBack();
+
+            String strLeftValue = (!leftValue.isJsonNull()) ? convertJsonToString(leftValue) : "";
+
+            switch (compareType) {
+                case EQUALS : result = (functionForCompare != null) ? functionForCompare.func.test(strLeftValue, rightValue) : strLeftValue.equals(rightValue); break;
+                case NOT_EQUALS : result = (functionForCompare != null) ? !functionForCompare.func.test(strLeftValue, rightValue) : !strLeftValue.equals(rightValue); break;
+            }
+
+            return result;
+        }
+    }
+
+    class NullValue extends TypeValueForCompare<String> {
+
+
+        public NullValue(String rightValue) {
+            super(rightValue);
+        }
+        @Override
+        boolean runCheck(JsonElement leftValue) {
+            boolean result = false;
+
+            switch (compareType) {
+                case EQUALS : result = leftValue.isJsonNull(); break;
+                case NOT_EQUALS : result = !leftValue.isJsonNull(); break;
+            }
+            return result;
+        }
+    }
+
+    class EmptyValue extends TypeValueForCompare<String> {
+
+        public EmptyValue(String rightValue) {
+            super(rightValue);
+        }
+        @Override
+        boolean runCheck(JsonElement leftValue) {
+            boolean result = false;
+
+            switch (compareType) {
+                case EQUALS :
+                    if (leftValue.isJsonArray())
+                        result = leftValue.getAsJsonArray().isEmpty();
+                    else if (leftValue.isJsonObject())
+                        result = leftValue.getAsJsonObject().isEmpty();
+                    break;
+                case NOT_EQUALS :
+                    if (leftValue.isJsonArray())
+                        result = !leftValue.getAsJsonArray().isEmpty();
+                    else if (leftValue.isJsonObject())
+                        result = !leftValue.getAsJsonObject().isEmpty();
+                    break;
+            }
+
+            return result;
+        }
     }
 }

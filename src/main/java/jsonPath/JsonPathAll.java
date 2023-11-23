@@ -3,6 +3,7 @@ package jsonPath;
 import antlr.JsonPathParser;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import jsonPath.function.Function;
 
 public class JsonPathAll extends BaseModel<JsonPathAll> {
 

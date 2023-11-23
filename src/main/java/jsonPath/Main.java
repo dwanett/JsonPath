@@ -16,6 +16,9 @@ public class Main {
                 "        \"author\": \"Leo Tolstoy\",\n" +
                 "        \"publication_year\": 1869,\n" +
                 "        \"genre\": \"novel\",\n" +
+                "        \"pole\": null,\n" +
+                "        \"object\": {},\n" +
+                "        \"array\": [],\n" +
                 "        \"publisher\": \"The Russian Messenger\",\n" +
                 "        \"details\": {\n" +
                 "          \"pages\": 1225,\n" +
@@ -44,6 +47,8 @@ public class Main {
                 "        \"author\": \"Fyodor Dostoevsky\",\n" +
                 "        \"publication_year\": 1866,\n" +
                 "        \"genre\": \"novel\",\n" +
+                "        \"pole\": \"das\",\n" +
+                "        \"object\": {},\n" +
                 "        \"publisher\": \"The Russian Messenger\",\n" +
                 "        \"details\": {\n" +
                 "          \"pages\": 671,\n" +
@@ -72,6 +77,8 @@ public class Main {
                 "        \"author\": \"Harper Lee\",\n" +
                 "        \"publication_year\": 1960,\n" +
                 "        \"genre\": \"novel\",\n" +
+                "        \"pole\": \"null\",\n" +
+                "        \"object\": {},\n" +
                 "        \"publisher\": \"J.B. Lippincott & Co.\",\n" +
                 "        \"details\": {\n" +
                 "          \"pages\": 281,\n" +
@@ -100,6 +107,8 @@ public class Main {
                 "        \"author\": \"George Orwell\",\n" +
                 "        \"publication_year\": 1949,\n" +
                 "        \"genre\": \"dystopian novel\",\n" +
+                "        \"pole\": null,\n" +
+                "        \"object\": {},\n" +
                 "        \"publisher\": \"Secker & Warburg\",\n" +
                 "        \"details\": {\n" +
                 "          \"pages\": 328,\n" +
@@ -149,6 +158,6 @@ public class Main {
                 "  }\n" +
                 "}", JsonElement.class);
 
-        System.out.println(JsonPath.getValue(json, "library.books[1]asd"));
+        System.out.println(JsonPath.getValue(json, "library.books[(pole == null)].title"));
     }
 }

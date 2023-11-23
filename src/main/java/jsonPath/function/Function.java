@@ -1,10 +1,10 @@
-package jsonPath;
+package jsonPath.function;
 
 import com.google.gson.JsonElement;
 
 @FunctionalInterface
 public interface Function<T> {
 
-    public T run(JsonElement jsonElement);
+    T run(JsonElement jsonElement);
 
 }

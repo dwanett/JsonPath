@@ -2,6 +2,9 @@ package jsonPath;
 
 import antlr.JsonPathParser;
 import com.google.gson.*;
+import jsonPath.function.SizeFunction;
+import jsonPath.function.SortFunction;
+
 import java.util.ArrayList;
 import java.util.List;
 

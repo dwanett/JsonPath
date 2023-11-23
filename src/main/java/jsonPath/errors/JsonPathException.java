@@ -1,4 +1,7 @@
-package jsonPath;
+package jsonPath.errors;
+
+import jsonPath.JsonPath;
+import jsonPath.JsonPathElement;
 
 public class JsonPathException extends RuntimeException {
 
@@ -14,6 +17,10 @@ public class JsonPathException extends RuntimeException {
     public JsonPathException (String messages) {
         super(messages);
     }
+    public JsonPathException (RuntimeException messages) {
+        super(messages);
+    }
+
 
     public JsonPath getJsonPath() {
         return jsonPath;

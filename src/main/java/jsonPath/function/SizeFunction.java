@@ -1,4 +1,4 @@
-package jsonPath;
+package jsonPath.function;
 
 import com.google.gson.JsonElement;
 
