@@ -149,6 +149,6 @@ public class Main {
                 "  }\n" +
                 "}", JsonElement.class);
 
-        System.out.println(JsonPath.getValue(json, "library.books[1]"));
+        System.out.println(JsonPath.getValue(json, "library.books[1]asd"));
     }
 }

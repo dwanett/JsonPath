@@ -11,6 +11,10 @@ public class JsonPathException extends RuntimeException {
         this.exceptedJsonPathElement = exceptedJsonPathElement;
     }
 
+    public JsonPathException (String messages) {
+        super(messages);
+    }
+
     public JsonPath getJsonPath() {
         return jsonPath;
     }

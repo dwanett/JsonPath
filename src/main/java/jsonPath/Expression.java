@@ -111,40 +111,33 @@ public class Expression extends BaseModel<Expression> {
 
         try {
             if (doubleValue != null) {
-                result = switch (compareType) {
-                    case EQUALS -> Double.valueOf(leftValue).equals(doubleValue);
-                    case NOT_EQUALS -> !Double.valueOf(leftValue).equals(doubleValue);
-                    case LESS -> Double.parseDouble(leftValue) < doubleValue;
-                    case LESS_OR_EQUALS -> Double.parseDouble(leftValue) <= doubleValue;
-                    case GREATER -> Double.parseDouble(leftValue) > doubleValue;
-                    case GREATER_OR_EQUALS -> Double.parseDouble(leftValue) >= doubleValue;
+                switch (compareType) {
+                    case EQUALS : result = Double.valueOf(leftValue).equals(doubleValue); break;
+                    case NOT_EQUALS : result = !Double.valueOf(leftValue).equals(doubleValue); break;
+                    case LESS : result = Double.parseDouble(leftValue) < doubleValue; break;
+                    case LESS_OR_EQUALS : result = Double.parseDouble(leftValue) <= doubleValue; break;
+                    case GREATER : result = Double.parseDouble(leftValue) > doubleValue; break;
+                    case GREATER_OR_EQUALS : result = Double.parseDouble(leftValue) >= doubleValue; break;
+
                 };
             } else if (longValue != null) {
-                result = switch (compareType) {
-                    case EQUALS -> Long.valueOf(leftValue).equals(longValue);
-                    case NOT_EQUALS -> !Long.valueOf(leftValue).equals(longValue);
-                    case LESS -> Long.parseLong(leftValue) < longValue;
-                    case LESS_OR_EQUALS -> Long.parseLong(leftValue) <= longValue;
-                    case GREATER -> Long.parseLong(leftValue) > longValue;
-                    case GREATER_OR_EQUALS -> Long.parseLong(leftValue) >= longValue;
+                switch (compareType) {
+                    case EQUALS : result = Long.valueOf(leftValue).equals(longValue); break;
+                    case NOT_EQUALS : result = !Long.valueOf(leftValue).equals(longValue); break;
+                    case LESS : result = Long.parseLong(leftValue) < longValue; break;
+                    case LESS_OR_EQUALS : result = Long.parseLong(leftValue) <= longValue; break;
+                    case GREATER : result = Long.parseLong(leftValue) > longValue; break;
+                    case GREATER_OR_EQUALS : result = Long.parseLong(leftValue) >= longValue; break;
                 };
             } else if (stringValue != null) {
-                result = switch (compareType) {
-                    case EQUALS -> (functionForCompare != null) ? functionForCompare.func.test(leftValue, stringValue) : leftValue.equals(stringValue);
-                    case NOT_EQUALS -> (functionForCompare != null) ? !functionForCompare.func.test(leftValue, stringValue) : !leftValue.equals(stringValue);
-                    default -> result;
+                switch (compareType) {
+                    case EQUALS : result = (functionForCompare != null) ? functionForCompare.func.test(leftValue, stringValue) : leftValue.equals(stringValue); break;
+                    case NOT_EQUALS : result = (functionForCompare != null) ? !functionForCompare.func.test(leftValue, stringValue) : !leftValue.equals(stringValue); break;
+                    default : result = false;
                 };
             } else
                 result = !leftValue.equals("null");
         } catch (Exception e) {
-/*            String message = null;
-            if (longValue != null)
-                message = String.format("Ошибка сравнения %s %s %d!", leftValue, compareType.str, longValue);
-            else if (longValue != null)
-                message = String.format("Ошибка сравнения %s %s %f!", leftValue, compareType.str, doubleValue);
-            else if (stringValue != null)
-                message = String.format("Ошибка сравнения %s %s %s!", leftValue, compareType.str, stringValue);
-            throw new JsonPathException(message, jsonPath, prevJsonPathElement);*/
             return false;
         }
         return result;
