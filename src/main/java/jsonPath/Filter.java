@@ -1,7 +1,11 @@
 package jsonPath;
 
 import antlr.JsonPathParser;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Filter extends BaseModel<Filter> {
     private Modificators modificator = null;
@@ -21,6 +25,11 @@ public class Filter extends BaseModel<Filter> {
     }
     private Condition condition;
 
+    public boolean filterRemoving;
+
+    private List<JsonElement> forRemoved = new ArrayList<>();
+
+
     @Override
     public Filter visitFilter(JsonPathParser.FilterContext ctx) {
         if (ctx.MATCHTYPE() != null)
@@ -32,13 +41,32 @@ public class Filter extends BaseModel<Filter> {
     }
 
 
-    public Integer filter(JsonElement curJson) {
-        Integer bit = condition.filter(curJson);
+    public void filter(JsonElement curJson) {
 
-        if (modificator == Modificators.NONMATCH)
-            bit = ((bit | 0) == 0) ? -1 : 0;
-        else if (modificator == Modificators.ALLMATCH)
-            bit = (~(bit & -1) == 0) ? 0 : -1;
-        return bit;
+        forRemoved.clear();
+        for (int i = 0; i < curJson.getAsJsonArray().size(); i++) {
+            if (condition.filter(((JsonArray) curJson).get(i)) == 0)
+                forRemoved.add(curJson.getAsJsonArray().get(i));
+        }
+
+        if (modificator == Modificators.NONMATCH) {
+            if (forRemoved.size() == curJson.getAsJsonArray().size())
+                forRemoved.clear();
+            else {
+                forRemoved.clear();
+                forRemoved.addAll(curJson.getAsJsonArray().asList());
+            }
+        }
+        if (modificator == Modificators.ALLMATCH) {
+            if (!forRemoved.isEmpty()) {
+                forRemoved.clear();
+                forRemoved.addAll(curJson.getAsJsonArray().asList());
+            }
+        }
+
+        if (filterRemoving || forRemoved.size() == curJson.getAsJsonArray().size()) {
+            for (JsonElement elemRemove : forRemoved)
+                curJson.getAsJsonArray().remove(elemRemove);
+        }
     }
 }

@@ -2,6 +2,7 @@ package jsonPath;
 
 import antlr.JsonPathParser;
 import com.google.gson.JsonElement;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntBinaryOperator;
@@ -73,19 +74,33 @@ public class Condition extends BaseModel<Condition> {
     }
 
      private Integer runLogicOperator(Integer startBit, LogicExpression curLogicExpression) {
-        int tmp = 0;
-
         if (!logicExpressions.contains(curLogicExpression))
             return startBit;
 
+        if (logicExpressions.size() == 1)
+            return curLogicExpression.func.applyAsInt((startBit >> 1) & 1, startBit & 1);
+
+        int leftBit = (startBit >> logicExpressions.size() - curLogicExpression.ordinal()) & 1;
+        int result = 0;
+
+
         for (int i = 0; i < logicExpressions.size(); i++) {
-             if (logicExpressions.get(i) == curLogicExpression)
-                 tmp |= curLogicExpression.func.applyAsInt((startBit >> logicExpressions.size() - i) & 1,
-                         (startBit >> logicExpressions.size() - (i + 1)) & 1);
-             else if (logicExpressions.get(i).ordinal() == curLogicExpression.ordinal() + 1)
-                 tmp <<= 1;
+             if (logicExpressions.get(i) == curLogicExpression) {
+                 int indexBit = (logicExpressions.size() - 1) - i - curLogicExpression.ordinal();
+                 indexBit = Math.max(indexBit, 0);
+                 leftBit = curLogicExpression.func.applyAsInt(leftBit, (startBit >> indexBit) & 1);
+                 if (logicExpressions.stream().allMatch(x -> x.equals(curLogicExpression)))
+                     result = leftBit;
+                 else
+                     result |= leftBit;
+             }
+             else {
+                 if (logicExpressions.get(i).ordinal() == curLogicExpression.ordinal() + 1)
+                     result = result << 1;
+                 leftBit = (startBit >> (logicExpressions.size() - 1) - i - curLogicExpression.ordinal()) & 1;
+             }
          }
 
-        return tmp;
+        return result;
      }
 }

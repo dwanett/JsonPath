@@ -10,7 +10,6 @@ public class JsonPathAll extends BaseModel<JsonPathAll> {
     private JsonPathElement jsonPathElement;
     public Function function = null;
 
-
     @Override
     public JsonPathAll visitJsonPath(JsonPathParser.JsonPathContext ctx) {
         jsonPath = this;
@@ -27,5 +26,9 @@ public class JsonPathAll extends BaseModel<JsonPathAll> {
             result = new JsonPrimitive(String.valueOf(function.run(result)));
 
         return convertJsonToString(result);
+    }
+
+    public JsonPathElement getJsonPathElement() {
+        return jsonPathElement;
     }
 }

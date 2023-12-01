@@ -17,6 +17,8 @@ public class BaseModel<T> extends JsonPathBaseVisitor<T> {
 
     protected JsonPathElement prevJsonPathElement;
 
+    protected static DiagnosticInformation diagnosticInformation;
+
     public static String getLiteralValue(int value) {
         return JsonPathParser.VOCABULARY.getLiteralName(value)
                 .substring(1, JsonPathParser.VOCABULARY.getLiteralName(value).length() - 1);
@@ -32,5 +34,4 @@ public class BaseModel<T> extends JsonPathBaseVisitor<T> {
         else
             return "null";
     }
-
 }

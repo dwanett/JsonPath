@@ -7,15 +7,9 @@ jsonPathElement
 
 filter : '[' MATCHTYPE? '(' condition ')]';
 
-//condition :  expr | expr LOGICEXPR condition | '{' condition '}' (LOGICEXPR condition)?;
-
-//condition :  expr (LOGICEXPR expr)* | (expr LOGICEXPR)? '{' condition '}' (LOGICEXPR (expr (LOGICEXPR condition)?))?;
-
 condition :  expr (LOGICEXPR expr)* | ((expr | priority) LOGICEXPR)* priority (LOGICEXPR (expr | priority))*;
 
 priority : '{' condition '}';
-
-//condition :  expr | expr LOGICEXPR expr (LOGICEXPR expr)* | (expr LOGICEXPR)* '{' condition '}' (LOGICEXPR condition)*;
 
 expr
     : jsonPathElement COMPARETYPE 'null'
@@ -24,6 +18,7 @@ expr
     | jsonPathElement COMPARETYPE STRING
     | jsonPathElement COMPARETYPE FUNCTIONFORCOMPARE
     | jsonPathElement COMPARETYPE BACK+ jsonPathElement
+    | FUNCTIONFORCOMPARE
     | jsonPathElement
     ;
 
@@ -58,13 +53,13 @@ DOT : '.';
 
 BACK : '../';
 
-NONMATCH : '!';
+NONMATCH : 'nonMatch';
 
-ALLMATCH : '*';
+ALLMATCH : 'allMatch';
 
 AND : '&&';
 
-OR : '||';
+OR : '<>';
 
 EQUALS : '==';
 

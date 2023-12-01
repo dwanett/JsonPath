@@ -5,9 +5,6 @@ import com.google.gson.*;
 import jsonPath.function.SizeFunction;
 import jsonPath.function.SortFunction;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class JsonPathElement extends BaseModel<JsonPathElement> {
     private String name;
 
@@ -26,6 +23,7 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
         if (ctx.filter() != null) {
             filter = new Filter();
             filter.prevJsonPathElement = this;
+            filter.filterRemoving = (this.prevJsonPathElement != null) ? prevJsonPathElement.getFilter() == null : false;
             filter = filter.visit(ctx.filter());
         }
 
@@ -50,15 +48,8 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
             JsonElement element = curJson.getAsJsonObject().get(name);
             if (!(element instanceof JsonArray))
                 return null;
-            else {
-                List<JsonElement> forRemoved = new ArrayList<>();
-                for (int i = 0; i < element.getAsJsonArray().size(); i++) {
-                    if (filter.filter(((JsonArray) element).get(i)) == 0)
-                        forRemoved.add(element.getAsJsonArray().get(i));
-                }
-                for (JsonElement elemRemove : forRemoved)
-                    element.getAsJsonArray().remove(elemRemove);
-            }
+            else
+                filter.filter(element);
         }
 
         curJson = getJsonElement(curJson);
@@ -66,6 +57,10 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
                 results.push(nextJsonPathElement.read(curJson));
         else
             results.push(curJson);
+        if (nextJsonPathElement == null && curJson != null)
+            diagnosticInformation = new DiagnosticInformation(curJson, jsonPath, null, null);
+        else if (curJson == null)
+            diagnosticInformation = new DiagnosticInformation(curJson, jsonPath, this, null);
         return results.pop();
     }
 
@@ -110,5 +105,13 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
 
     public JsonPathElement getNextJsonPathElement() {
         return nextJsonPathElement;
+    }
+
+    public Filter getFilter() {
+        return filter;
+    }
+
+    public String getName() {
+        return name;
     }
 }
