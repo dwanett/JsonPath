@@ -16,7 +16,7 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
 
     @Override
     public JsonPathElement visitJsonPathElement(JsonPathParser.JsonPathElementContext ctx) {
-        name = ctx.NAME() != null ? ctx.NAME().getText() : ctx.STRING().getText();
+        name = ctx.NAME() != null ? ctx.NAME().getText() : ctx.STRING().getText().replaceAll("\"","");
 
         indexArray = ctx.INDEXARRAY() != null ? ctx.INDEXARRAY().getText().replaceAll("\\[|\\]", "") : null;
 
@@ -46,8 +46,10 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
     public JsonElement read(JsonElement curJson) {
         if (filter != null && curJson != null) {
             JsonElement element = curJson.getAsJsonObject().get(name);
-            if (!(element instanceof JsonArray))
+            if (!(element instanceof JsonArray)) {
+                diagnosticInformation = new DiagnosticInformation(element, jsonPath, this, null);
                 return null;
+            }
             else
                 filter.filter(element);
         }
@@ -82,8 +84,8 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
                 try {
                     return json.getAsJsonArray().get(indexArray != null ? Integer.parseInt(indexArray) : 0);
                 } catch (Exception e) {
-                    results.push(null);
-                    return null;
+                    results.push(new JsonObject());
+                    return results.peek();
                 }
             }
         } else if (json instanceof JsonObject) {

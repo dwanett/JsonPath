@@ -64,9 +64,7 @@ public class Filter extends BaseModel<Filter> {
             }
         }
 
-        if (filterRemoving || forRemoved.size() == curJson.getAsJsonArray().size()) {
-            for (JsonElement elemRemove : forRemoved)
-                curJson.getAsJsonArray().remove(elemRemove);
-        }
+        for (JsonElement elemRemove : forRemoved)
+            curJson.getAsJsonArray().remove(elemRemove);
     }
 }

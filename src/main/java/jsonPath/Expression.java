@@ -66,37 +66,41 @@ public class Expression extends BaseModel<Expression> {
 
     private JsonPathElement jsonPathElementSecond;
 
+    private boolean isNot;
+
 
     @Override
     public Expression visitExpr(JsonPathParser.ExprContext ctx) {
         jsonPathElement = new JsonPathElement();
         jsonPathElement.prevJsonPathElement = this.prevJsonPathElement;
-        functionForCompare = FunctionForCompare.getFunctionForCompare(ctx.getChild(0).getText());
+        int index = ctx.NOT() != null ? 1 : 0;
+        isNot = ctx.NOT() != null;
+        functionForCompare = FunctionForCompare.getFunctionForCompare(ctx.getChild(index).getText());
         if (functionForCompare == null)
-            jsonPathElement.visit(ctx.getChild(0));
+            jsonPathElement.visit(ctx.getChild(index));
         else {
             compareType = CompareType.EQUALS;
-            typeValueForCompare = new StringValue(ctx.getChild(0).getText());
+            typeValueForCompare = new StringValue(ctx.getChild(index).getText());
             return this;
         }
-        if (ctx.getChildCount() > 1) {
-            compareType = CompareType.getCompareType(ctx.getChild(1).getText());
+        if (ctx.COMPARETYPE() != null || ctx.COMPARETYPENOTSTRICT() != null) {
+            compareType = CompareType.getCompareType(ctx.getChild(index + 1).getText());
 
             if (ctx.BACK() != null && !ctx.BACK().isEmpty()) {
                 back = ctx.BACK();
                 jsonPathElementSecond = new JsonPathElement();
                 jsonPathElementSecond.prevJsonPathElement = this.prevJsonPathElement;
-                jsonPathElementSecond.visit(ctx.jsonPathElement(1));
+                jsonPathElementSecond.visit(ctx.jsonPathElement(index + 1));
                 typeValueForCompare = new StringValue("");
 
             } else {
                 try {
-                    typeValueForCompare = new LongValue(Long.valueOf(ctx.getChild(2).getText()));
+                    typeValueForCompare = new LongValue(Long.valueOf(ctx.getChild(index + 2).getText()));
                 } catch (Exception eLong) {
                     try {
-                        typeValueForCompare = new DoubleValue(Double.valueOf(ctx.getChild(2).getText()));
+                        typeValueForCompare = new DoubleValue(Double.valueOf(ctx.getChild(index + 2).getText()));
                     } catch (Exception eDouble) {
-                        String rightValue = ctx.getChild(2).getText();
+                        String rightValue = ctx.getChild(index + 2).getText();
                         typeValueForCompare = new StringValue(rightValue);
 
                         if (rightValue.equals("null"))
@@ -106,7 +110,7 @@ public class Expression extends BaseModel<Expression> {
                         else {
                             functionForCompare = FunctionForCompare.getFunctionForCompare(rightValue);
                             if (functionForCompare == null) {
-                                rightValue = rightValue.substring(1, ctx.getChild(2).getText().length() - 1);
+                                rightValue = rightValue.substring(1, ctx.getChild(index + 2).getText().length() - 1);
                                 typeValueForCompare = new StringValue(rightValue);
                             }
                         }
@@ -114,19 +118,16 @@ public class Expression extends BaseModel<Expression> {
                 }
             }
         } else {
-            if (jsonPathElement.prevJsonPathElement == null)
-                typeValueForCompare = new ContainsElement("");
-            else
-                typeValueForCompare = new ContainsElementNotEmpty("");
+            typeValueForCompare = new ContainsElementNotEmpty("");
         }
         return this;
     }
 
     public boolean compare(JsonElement curJson) {
         try {
-            return typeValueForCompare.runCheck(jsonPathElement.read(curJson.deepCopy()));
+            return isNot ^ typeValueForCompare.runCheck(jsonPathElement.read(curJson.deepCopy()));
         } catch (Exception e) {
-            return false;
+            return isNot;
         }
     }
 
@@ -269,18 +270,6 @@ public class Expression extends BaseModel<Expression> {
             }
 
             return result;
-        }
-    }
-
-    class ContainsElement extends TypeValueForCompare<String> {
-
-        public ContainsElement(String rightValue) {
-            super(rightValue);
-        }
-
-        @Override
-        boolean runCheck(JsonElement leftValue) {
-            return leftValue != null;
         }
     }
 

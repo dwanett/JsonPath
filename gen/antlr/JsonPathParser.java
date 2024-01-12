@@ -20,9 +20,9 @@ public class JsonPathParser extends Parser {
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, STRING=8, FUNCTION=9, 
 		FUNCTIONFORCOMPARE=10, INDEXARRAY=11, MATCHTYPE=12, FLOAT=13, COMPARETYPE=14, 
 		COMPARETYPENOTSTRICT=15, LOGICEXPR=16, DIGIT=17, NAME=18, ALLINDEX=19, 
-		DOT=20, BACK=21, NONMATCH=22, ALLMATCH=23, AND=24, OR=25, EQUALS=26, NOT_EQUALS=27, 
-		LESS=28, LESS_OR_EQUALS=29, GREATER=30, GREATER_OR_EQUALS=31, SORT=32, 
-		SIZE=33, REG=34, CONTAINS=35, WS=36;
+		NOT=20, DOT=21, BACK=22, NONMATCH=23, ALLMATCH=24, AND=25, OR=26, EQUALS=27, 
+		NOT_EQUALS=28, LESS=29, LESS_OR_EQUALS=30, GREATER=31, GREATER_OR_EQUALS=32, 
+		SORT=33, SIZE=34, REG=35, CONTAINS=36, WS=37;
 	public static final int
 		RULE_jsonPath = 0, RULE_jsonPathElement = 1, RULE_filter = 2, RULE_condition = 3, 
 		RULE_priority = 4, RULE_expr = 5;
@@ -36,8 +36,8 @@ public class JsonPathParser extends Parser {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, "'['", "'('", "')]'", "'{'", "'}'", "'null'", "'empty'", null, 
-			null, null, null, null, null, null, null, null, null, null, "'~'", "'.'", 
-			"'../'", "'nonMatch'", "'allMatch'", "'&&'", "'<>'", "'=='", "'!='", 
+			null, null, null, null, null, null, null, null, null, null, "'~'", "'!'", 
+			"'.'", "'../'", "'nonMatch'", "'allMatch'", "'&&'", "'||'", "'=='", "'!='", 
 			"'<'", "'<='", "'>'", "'>='", "'sort()'", "'size()'"
 		};
 	}
@@ -46,8 +46,8 @@ public class JsonPathParser extends Parser {
 		return new String[] {
 			null, null, null, null, null, null, null, null, "STRING", "FUNCTION", 
 			"FUNCTIONFORCOMPARE", "INDEXARRAY", "MATCHTYPE", "FLOAT", "COMPARETYPE", 
-			"COMPARETYPENOTSTRICT", "LOGICEXPR", "DIGIT", "NAME", "ALLINDEX", "DOT", 
-			"BACK", "NONMATCH", "ALLMATCH", "AND", "OR", "EQUALS", "NOT_EQUALS", 
+			"COMPARETYPENOTSTRICT", "LOGICEXPR", "DIGIT", "NAME", "ALLINDEX", "NOT", 
+			"DOT", "BACK", "NONMATCH", "ALLMATCH", "AND", "OR", "EQUALS", "NOT_EQUALS", 
 			"LESS", "LESS_OR_EQUALS", "GREATER", "GREATER_OR_EQUALS", "SORT", "SIZE", 
 			"REG", "CONTAINS", "WS"
 		};
@@ -448,6 +448,7 @@ public class JsonPathParser extends Parser {
 						case STRING:
 						case FUNCTIONFORCOMPARE:
 						case NAME:
+						case NOT:
 							{
 							setState(50);
 							expr();
@@ -487,6 +488,7 @@ public class JsonPathParser extends Parser {
 					case STRING:
 					case FUNCTIONFORCOMPARE:
 					case NAME:
+					case NOT:
 						{
 						setState(63);
 						expr();
@@ -589,6 +591,7 @@ public class JsonPathParser extends Parser {
 		public TerminalNode BACK(int i) {
 			return getToken(JsonPathParser.BACK, i);
 		}
+		public TerminalNode NOT() { return getToken(JsonPathParser.NOT, 0); }
 		public ExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -613,9 +616,9 @@ public class JsonPathParser extends Parser {
 		enterRule(_localctx, 10, RULE_expr);
 		int _la;
 		try {
-			setState(109);
+			setState(115);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,14,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
@@ -715,14 +718,34 @@ public class JsonPathParser extends Parser {
 			case 7:
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(107);
+				setState(108);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==NOT) {
+					{
+					setState(107);
+					match(NOT);
+					}
+				}
+
+				setState(110);
 				match(FUNCTIONFORCOMPARE);
 				}
 				break;
 			case 8:
 				enterOuterAlt(_localctx, 8);
 				{
-				setState(108);
+				setState(112);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==NOT) {
+					{
+					setState(111);
+					match(NOT);
+					}
+				}
+
+				setState(114);
 				jsonPathElement();
 				}
 				break;
@@ -740,7 +763,7 @@ public class JsonPathParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001$p\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002\u0002"+
+		"\u0004\u0001%v\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002\u0002"+
 		"\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002\u0005"+
 		"\u0007\u0005\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0001\u0001\u0001"+
 		"\u0001\u0001\u0001\u0001\u0003\u0001\u0014\b\u0001\u0001\u0001\u0001\u0001"+
@@ -757,59 +780,62 @@ public class JsonPathParser extends Parser {
 		"\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001"+
 		"\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001"+
 		"\u0005\u0001\u0005\u0001\u0005\u0004\u0005f\b\u0005\u000b\u0005\f\u0005"+
-		"g\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0003\u0005n\b\u0005"+
-		"\u0001\u0005\u0000\u0000\u0006\u0000\u0002\u0004\u0006\b\n\u0000\u0003"+
-		"\u0002\u0000\b\b\u0012\u0012\u0001\u0000\u000e\u000f\u0002\u0000\r\r\u0011"+
-		"\u0011}\u0000\f\u0001\u0000\u0000\u0000\u0002\u0019\u0001\u0000\u0000"+
-		"\u0000\u0004\"\u0001\u0000\u0000\u0000\u0006H\u0001\u0000\u0000\u0000"+
-		"\bJ\u0001\u0000\u0000\u0000\nm\u0001\u0000\u0000\u0000\f\r\u0003\u0002"+
-		"\u0001\u0000\r\u000e\u0005\u0000\u0000\u0001\u000e\u0001\u0001\u0000\u0000"+
-		"\u0000\u000f\u001a\u0007\u0000\u0000\u0000\u0010\u0013\u0007\u0000\u0000"+
-		"\u0000\u0011\u0014\u0003\u0004\u0002\u0000\u0012\u0014\u0005\u000b\u0000"+
-		"\u0000\u0013\u0011\u0001\u0000\u0000\u0000\u0013\u0012\u0001\u0000\u0000"+
-		"\u0000\u0014\u001a\u0001\u0000\u0000\u0000\u0015\u0016\u0007\u0000\u0000"+
-		"\u0000\u0016\u0017\u0003\u0004\u0002\u0000\u0017\u0018\u0005\u000b\u0000"+
-		"\u0000\u0018\u001a\u0001\u0000\u0000\u0000\u0019\u000f\u0001\u0000\u0000"+
-		"\u0000\u0019\u0010\u0001\u0000\u0000\u0000\u0019\u0015\u0001\u0000\u0000"+
-		"\u0000\u001a \u0001\u0000\u0000\u0000\u001b\u001e\u0005\u0014\u0000\u0000"+
-		"\u001c\u001f\u0003\u0002\u0001\u0000\u001d\u001f\u0005\t\u0000\u0000\u001e"+
-		"\u001c\u0001\u0000\u0000\u0000\u001e\u001d\u0001\u0000\u0000\u0000\u001f"+
-		"!\u0001\u0000\u0000\u0000 \u001b\u0001\u0000\u0000\u0000 !\u0001\u0000"+
-		"\u0000\u0000!\u0003\u0001\u0000\u0000\u0000\"$\u0005\u0001\u0000\u0000"+
-		"#%\u0005\f\u0000\u0000$#\u0001\u0000\u0000\u0000$%\u0001\u0000\u0000\u0000"+
-		"%&\u0001\u0000\u0000\u0000&\'\u0005\u0002\u0000\u0000\'(\u0003\u0006\u0003"+
-		"\u0000()\u0005\u0003\u0000\u0000)\u0005\u0001\u0000\u0000\u0000*/\u0003"+
-		"\n\u0005\u0000+,\u0005\u0010\u0000\u0000,.\u0003\n\u0005\u0000-+\u0001"+
-		"\u0000\u0000\u0000.1\u0001\u0000\u0000\u0000/-\u0001\u0000\u0000\u0000"+
-		"/0\u0001\u0000\u0000\u00000I\u0001\u0000\u0000\u00001/\u0001\u0000\u0000"+
-		"\u000025\u0003\n\u0005\u000035\u0003\b\u0004\u000042\u0001\u0000\u0000"+
-		"\u000043\u0001\u0000\u0000\u000056\u0001\u0000\u0000\u000067\u0005\u0010"+
-		"\u0000\u000079\u0001\u0000\u0000\u000084\u0001\u0000\u0000\u00009<\u0001"+
-		"\u0000\u0000\u0000:8\u0001\u0000\u0000\u0000:;\u0001\u0000\u0000\u0000"+
-		";=\u0001\u0000\u0000\u0000<:\u0001\u0000\u0000\u0000=E\u0003\b\u0004\u0000"+
-		">A\u0005\u0010\u0000\u0000?B\u0003\n\u0005\u0000@B\u0003\b\u0004\u0000"+
-		"A?\u0001\u0000\u0000\u0000A@\u0001\u0000\u0000\u0000BD\u0001\u0000\u0000"+
-		"\u0000C>\u0001\u0000\u0000\u0000DG\u0001\u0000\u0000\u0000EC\u0001\u0000"+
-		"\u0000\u0000EF\u0001\u0000\u0000\u0000FI\u0001\u0000\u0000\u0000GE\u0001"+
-		"\u0000\u0000\u0000H*\u0001\u0000\u0000\u0000H:\u0001\u0000\u0000\u0000"+
-		"I\u0007\u0001\u0000\u0000\u0000JK\u0005\u0004\u0000\u0000KL\u0003\u0006"+
-		"\u0003\u0000LM\u0005\u0005\u0000\u0000M\t\u0001\u0000\u0000\u0000NO\u0003"+
-		"\u0002\u0001\u0000OP\u0005\u000e\u0000\u0000PQ\u0005\u0006\u0000\u0000"+
-		"Qn\u0001\u0000\u0000\u0000RS\u0003\u0002\u0001\u0000ST\u0005\u000e\u0000"+
-		"\u0000TU\u0005\u0007\u0000\u0000Un\u0001\u0000\u0000\u0000VW\u0003\u0002"+
-		"\u0001\u0000WX\u0007\u0001\u0000\u0000XY\u0007\u0002\u0000\u0000Yn\u0001"+
-		"\u0000\u0000\u0000Z[\u0003\u0002\u0001\u0000[\\\u0005\u000e\u0000\u0000"+
-		"\\]\u0005\b\u0000\u0000]n\u0001\u0000\u0000\u0000^_\u0003\u0002\u0001"+
-		"\u0000_`\u0005\u000e\u0000\u0000`a\u0005\n\u0000\u0000an\u0001\u0000\u0000"+
-		"\u0000bc\u0003\u0002\u0001\u0000ce\u0005\u000e\u0000\u0000df\u0005\u0015"+
-		"\u0000\u0000ed\u0001\u0000\u0000\u0000fg\u0001\u0000\u0000\u0000ge\u0001"+
-		"\u0000\u0000\u0000gh\u0001\u0000\u0000\u0000hi\u0001\u0000\u0000\u0000"+
-		"ij\u0003\u0002\u0001\u0000jn\u0001\u0000\u0000\u0000kn\u0005\n\u0000\u0000"+
-		"ln\u0003\u0002\u0001\u0000mN\u0001\u0000\u0000\u0000mR\u0001\u0000\u0000"+
-		"\u0000mV\u0001\u0000\u0000\u0000mZ\u0001\u0000\u0000\u0000m^\u0001\u0000"+
-		"\u0000\u0000mb\u0001\u0000\u0000\u0000mk\u0001\u0000\u0000\u0000ml\u0001"+
-		"\u0000\u0000\u0000n\u000b\u0001\u0000\u0000\u0000\r\u0013\u0019\u001e"+
-		" $/4:AEHgm";
+		"g\u0001\u0005\u0001\u0005\u0001\u0005\u0003\u0005m\b\u0005\u0001\u0005"+
+		"\u0001\u0005\u0003\u0005q\b\u0005\u0001\u0005\u0003\u0005t\b\u0005\u0001"+
+		"\u0005\u0000\u0000\u0006\u0000\u0002\u0004\u0006\b\n\u0000\u0003\u0002"+
+		"\u0000\b\b\u0012\u0012\u0001\u0000\u000e\u000f\u0002\u0000\r\r\u0011\u0011"+
+		"\u0085\u0000\f\u0001\u0000\u0000\u0000\u0002\u0019\u0001\u0000\u0000\u0000"+
+		"\u0004\"\u0001\u0000\u0000\u0000\u0006H\u0001\u0000\u0000\u0000\bJ\u0001"+
+		"\u0000\u0000\u0000\ns\u0001\u0000\u0000\u0000\f\r\u0003\u0002\u0001\u0000"+
+		"\r\u000e\u0005\u0000\u0000\u0001\u000e\u0001\u0001\u0000\u0000\u0000\u000f"+
+		"\u001a\u0007\u0000\u0000\u0000\u0010\u0013\u0007\u0000\u0000\u0000\u0011"+
+		"\u0014\u0003\u0004\u0002\u0000\u0012\u0014\u0005\u000b\u0000\u0000\u0013"+
+		"\u0011\u0001\u0000\u0000\u0000\u0013\u0012\u0001\u0000\u0000\u0000\u0014"+
+		"\u001a\u0001\u0000\u0000\u0000\u0015\u0016\u0007\u0000\u0000\u0000\u0016"+
+		"\u0017\u0003\u0004\u0002\u0000\u0017\u0018\u0005\u000b\u0000\u0000\u0018"+
+		"\u001a\u0001\u0000\u0000\u0000\u0019\u000f\u0001\u0000\u0000\u0000\u0019"+
+		"\u0010\u0001\u0000\u0000\u0000\u0019\u0015\u0001\u0000\u0000\u0000\u001a"+
+		" \u0001\u0000\u0000\u0000\u001b\u001e\u0005\u0015\u0000\u0000\u001c\u001f"+
+		"\u0003\u0002\u0001\u0000\u001d\u001f\u0005\t\u0000\u0000\u001e\u001c\u0001"+
+		"\u0000\u0000\u0000\u001e\u001d\u0001\u0000\u0000\u0000\u001f!\u0001\u0000"+
+		"\u0000\u0000 \u001b\u0001\u0000\u0000\u0000 !\u0001\u0000\u0000\u0000"+
+		"!\u0003\u0001\u0000\u0000\u0000\"$\u0005\u0001\u0000\u0000#%\u0005\f\u0000"+
+		"\u0000$#\u0001\u0000\u0000\u0000$%\u0001\u0000\u0000\u0000%&\u0001\u0000"+
+		"\u0000\u0000&\'\u0005\u0002\u0000\u0000\'(\u0003\u0006\u0003\u0000()\u0005"+
+		"\u0003\u0000\u0000)\u0005\u0001\u0000\u0000\u0000*/\u0003\n\u0005\u0000"+
+		"+,\u0005\u0010\u0000\u0000,.\u0003\n\u0005\u0000-+\u0001\u0000\u0000\u0000"+
+		".1\u0001\u0000\u0000\u0000/-\u0001\u0000\u0000\u0000/0\u0001\u0000\u0000"+
+		"\u00000I\u0001\u0000\u0000\u00001/\u0001\u0000\u0000\u000025\u0003\n\u0005"+
+		"\u000035\u0003\b\u0004\u000042\u0001\u0000\u0000\u000043\u0001\u0000\u0000"+
+		"\u000056\u0001\u0000\u0000\u000067\u0005\u0010\u0000\u000079\u0001\u0000"+
+		"\u0000\u000084\u0001\u0000\u0000\u00009<\u0001\u0000\u0000\u0000:8\u0001"+
+		"\u0000\u0000\u0000:;\u0001\u0000\u0000\u0000;=\u0001\u0000\u0000\u0000"+
+		"<:\u0001\u0000\u0000\u0000=E\u0003\b\u0004\u0000>A\u0005\u0010\u0000\u0000"+
+		"?B\u0003\n\u0005\u0000@B\u0003\b\u0004\u0000A?\u0001\u0000\u0000\u0000"+
+		"A@\u0001\u0000\u0000\u0000BD\u0001\u0000\u0000\u0000C>\u0001\u0000\u0000"+
+		"\u0000DG\u0001\u0000\u0000\u0000EC\u0001\u0000\u0000\u0000EF\u0001\u0000"+
+		"\u0000\u0000FI\u0001\u0000\u0000\u0000GE\u0001\u0000\u0000\u0000H*\u0001"+
+		"\u0000\u0000\u0000H:\u0001\u0000\u0000\u0000I\u0007\u0001\u0000\u0000"+
+		"\u0000JK\u0005\u0004\u0000\u0000KL\u0003\u0006\u0003\u0000LM\u0005\u0005"+
+		"\u0000\u0000M\t\u0001\u0000\u0000\u0000NO\u0003\u0002\u0001\u0000OP\u0005"+
+		"\u000e\u0000\u0000PQ\u0005\u0006\u0000\u0000Qt\u0001\u0000\u0000\u0000"+
+		"RS\u0003\u0002\u0001\u0000ST\u0005\u000e\u0000\u0000TU\u0005\u0007\u0000"+
+		"\u0000Ut\u0001\u0000\u0000\u0000VW\u0003\u0002\u0001\u0000WX\u0007\u0001"+
+		"\u0000\u0000XY\u0007\u0002\u0000\u0000Yt\u0001\u0000\u0000\u0000Z[\u0003"+
+		"\u0002\u0001\u0000[\\\u0005\u000e\u0000\u0000\\]\u0005\b\u0000\u0000]"+
+		"t\u0001\u0000\u0000\u0000^_\u0003\u0002\u0001\u0000_`\u0005\u000e\u0000"+
+		"\u0000`a\u0005\n\u0000\u0000at\u0001\u0000\u0000\u0000bc\u0003\u0002\u0001"+
+		"\u0000ce\u0005\u000e\u0000\u0000df\u0005\u0016\u0000\u0000ed\u0001\u0000"+
+		"\u0000\u0000fg\u0001\u0000\u0000\u0000ge\u0001\u0000\u0000\u0000gh\u0001"+
+		"\u0000\u0000\u0000hi\u0001\u0000\u0000\u0000ij\u0003\u0002\u0001\u0000"+
+		"jt\u0001\u0000\u0000\u0000km\u0005\u0014\u0000\u0000lk\u0001\u0000\u0000"+
+		"\u0000lm\u0001\u0000\u0000\u0000mn\u0001\u0000\u0000\u0000nt\u0005\n\u0000"+
+		"\u0000oq\u0005\u0014\u0000\u0000po\u0001\u0000\u0000\u0000pq\u0001\u0000"+
+		"\u0000\u0000qr\u0001\u0000\u0000\u0000rt\u0003\u0002\u0001\u0000sN\u0001"+
+		"\u0000\u0000\u0000sR\u0001\u0000\u0000\u0000sV\u0001\u0000\u0000\u0000"+
+		"sZ\u0001\u0000\u0000\u0000s^\u0001\u0000\u0000\u0000sb\u0001\u0000\u0000"+
+		"\u0000sl\u0001\u0000\u0000\u0000sp\u0001\u0000\u0000\u0000t\u000b\u0001"+
+		"\u0000\u0000\u0000\u000f\u0013\u0019\u001e $/4:AEHglps";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

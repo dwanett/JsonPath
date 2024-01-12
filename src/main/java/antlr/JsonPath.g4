@@ -18,8 +18,8 @@ expr
     | jsonPathElement COMPARETYPE STRING
     | jsonPathElement COMPARETYPE FUNCTIONFORCOMPARE
     | jsonPathElement COMPARETYPE BACK+ jsonPathElement
-    | FUNCTIONFORCOMPARE
-    | jsonPathElement
+    | NOT? FUNCTIONFORCOMPARE
+    | NOT? jsonPathElement
     ;
 
 
@@ -49,6 +49,8 @@ NAME : [a-zA-Z0-9_,]+;
 
 ALLINDEX : '~';
 
+NOT : '!';
+
 DOT : '.';
 
 BACK : '../';
@@ -59,7 +61,7 @@ ALLMATCH : 'allMatch';
 
 AND : '&&';
 
-OR : '<>';
+OR : '||';
 
 EQUALS : '==';
 
