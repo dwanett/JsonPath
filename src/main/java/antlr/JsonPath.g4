@@ -3,7 +3,7 @@ grammar JsonPath;
 jsonPath : jsonPathElement EOF;
 
 jsonPathElement
-: ((NAME | STRING) | (NAME | STRING) (filter | INDEXARRAY) | (NAME | STRING) filter INDEXARRAY) (DOT (jsonPathElement | FUNCTION))?;
+: (NAME | STRING | NO_NAME) filter? INDEXARRAY? (DOT (jsonPathElement | FUNCTION))?;
 
 filter : '[' MATCHTYPE? '(' condition ')]';
 
@@ -27,7 +27,7 @@ STRING: '"' (ESC|.)*? '"' ;
 fragment
 ESC : '\\"' | '\\\\' ;
 
-FUNCTION : SORT | SIZE;
+FUNCTION : SORT | SIZE | DISTINCT | NAMEATTR;
 
 FUNCTIONFORCOMPARE : REG | CONTAINS;
 
@@ -46,6 +46,8 @@ LOGICEXPR : AND | OR;
 DIGIT : [0-9]+;
 
 NAME : [a-zA-Z0-9_,]+;
+
+NO_NAME : '*';
 
 ALLINDEX : '~';
 
@@ -78,6 +80,10 @@ GREATER_OR_EQUALS : '>=';
 SORT : 'sort()';
 
 SIZE : 'size()';
+
+DISTINCT : 'distinct()';
+
+NAMEATTR : 'name()';
 
 REG : 'reg(' STRING ')';
 

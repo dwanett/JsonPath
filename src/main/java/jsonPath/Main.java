@@ -567,14 +567,16 @@ public class Main {
                 "    }\n" +
                 "  }\n" +
                 "}", JsonElement.class);
-        System.out.println(JsonPath.getValue(json, "body.roadMap.stages"));
-        System.out.printf("%c", 'A' + 1);
-        //System.out.println(JsonPath.getValue(json, "library.books[(publisher == contains(\"Russian\"))]"));
+        System.out.println(JsonPath.getValue(json, "*.*.stages[~].mode.distinct()"));
+        System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].mode.distinct()"));
+        System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].sla.name()"));
+        System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].sla.distinct()"));
+        System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].sla.status.distinct()"));
 
         //regenTests(json);
     }
 
-    private static void regenTests (JsonElement json) {
+    private static void regenTests(JsonElement json) {
         Map<String, List<String>> tests = new HashMap<>();
 
         List<String> pathTest = new ArrayList<>();

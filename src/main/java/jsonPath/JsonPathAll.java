@@ -2,6 +2,7 @@ package jsonPath;
 
 import antlr.JsonPathParser;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import jsonPath.function.Function;
 
@@ -22,8 +23,10 @@ public class JsonPathAll extends BaseModel<JsonPathAll> {
         immutableJson = json.deepCopy();
         JsonElement result = jsonPathElement.read(json.deepCopy());
 
-        if (function != null)
-            result = new JsonPrimitive(String.valueOf(function.run(result)));
+        if (function != null) {
+            Object resultObj = function.run(result);
+            result = resultObj instanceof JsonPrimitive ? (JsonPrimitive)resultObj : new JsonPrimitive(String.valueOf(resultObj));
+        }
 
         return convertJsonToString(result);
     }
