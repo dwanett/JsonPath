@@ -133,13 +133,21 @@ public class Expression extends BaseModel<Expression> {
 
     private String runBack() {
         JsonPathElement curJsonPathElement = this.prevJsonPathElement;
-        for (int i = 0; i < back.size(); i++)
-            curJsonPathElement = curJsonPathElement.prevJsonPathElement;
-        JsonPathElement saveNextJsonPathElement = curJsonPathElement.getNextJsonPathElement();
-        curJsonPathElement.replaceNextJsonPathElement(jsonPathElementSecond);
-        JsonPathElement rootJsonPathElement = curJsonPathElement;
-        while (rootJsonPathElement.prevJsonPathElement != null)
-            rootJsonPathElement = rootJsonPathElement.prevJsonPathElement;
+        JsonPathElement saveNextJsonPathElement;
+        JsonPathElement rootJsonPathElement;
+        if (curJsonPathElement.prevJsonPathElement != null) {
+            for (int i = 0; i < back.size(); i++)
+                curJsonPathElement = curJsonPathElement.prevJsonPathElement;
+            saveNextJsonPathElement = curJsonPathElement.getNextJsonPathElement();
+            curJsonPathElement.replaceNextJsonPathElement(jsonPathElementSecond);
+            rootJsonPathElement = curJsonPathElement;
+            while (rootJsonPathElement.prevJsonPathElement != null)
+                rootJsonPathElement = rootJsonPathElement.prevJsonPathElement;
+        } else {
+            saveNextJsonPathElement = curJsonPathElement.getNextJsonPathElement();
+            rootJsonPathElement = jsonPathElementSecond;
+        }
+
         String result = convertJsonToString(rootJsonPathElement.read(immutableJson));
         curJsonPathElement.replaceNextJsonPathElement(saveNextJsonPathElement);
         return result;

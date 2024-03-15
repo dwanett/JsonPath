@@ -148,4 +148,8 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
     public Filter getFilter() {
         return filter;
     }
+
+    public String getName() {
+        return name;
+    }
 }
