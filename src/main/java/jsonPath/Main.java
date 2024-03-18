@@ -571,7 +571,6 @@ public class Main {
         System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].mode.distinct()"));
         System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].sla.name()"));
         System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].sla.distinct()"));
-        System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].sla.status.distinct()"));
 
         //regenTests(json);
     }
