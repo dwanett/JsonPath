@@ -2,6 +2,7 @@ package jsonPath;
 
 import antlr.JsonPathParser;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
@@ -40,8 +41,7 @@ public class Expression extends BaseModel<Expression> {
 
     private enum FunctionForCompare {
         REG("reg", (left, right) -> left.matches(right.substring(5, right.length() - 2))),
-        CONTAINS("contains", (left, right) -> left.contains(right.substring(10, right.length() - 2))),
-        NOT_CONTAINS("notContains", (left, right) -> !left.contains(right.substring(13, right.length() - 2)));
+        CONTAINS("contains", (left, right) -> left.contains(right.substring(10, right.length() - 2)));
 
         private String str;
 
@@ -125,7 +125,7 @@ public class Expression extends BaseModel<Expression> {
 
     public boolean compare(JsonElement curJson) {
         try {
-            return isNot ^ typeValueForCompare.runCheck(jsonPathElement.read(curJson.deepCopy()));
+            return isNot ^ typeValueForCompare.runCheck(curJson instanceof JsonPrimitive ? curJson.deepCopy() : jsonPathElement.read(curJson.deepCopy()));
         } catch (Exception e) {
             return isNot;
         }

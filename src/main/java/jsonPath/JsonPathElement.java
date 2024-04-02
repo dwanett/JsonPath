@@ -4,7 +4,10 @@ import antlr.JsonPathParser;
 import com.google.gson.*;
 import jsonPath.function.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 public class JsonPathElement extends BaseModel<JsonPathElement> {
     private String name;
 
@@ -130,6 +133,11 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
 
             JsonElement resultFind = this.read(json);
             if (resultFind != null) {
+                if (resultFind.isJsonArray()) {
+                    List<JsonElement> array = resultFind.getAsJsonArray().asList().stream().distinct().collect(Collectors.toList());
+                    if (array.size() == 1 && array.get(0).isJsonNull())
+                        continue;
+                }
                 if (resultFind.isJsonArray() && resultFind.getAsJsonArray().isEmpty())
                     continue;
                 break;
