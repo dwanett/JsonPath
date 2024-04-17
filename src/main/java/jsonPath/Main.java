@@ -567,10 +567,15 @@ public class Main {
                 "    }\n" +
                 "  }\n" +
                 "}", JsonElement.class);
-        System.out.println(JsonPath.getValue(json, "*.*.stages[~].mode.distinct()"));
+
+
+        String testJson = "{ \"library\": { \"location\": \"New York\", \"floor_count\": 3, \"books\": [ { \"title\": \"War and Peace\", \"author\": \"Leo Tolstoy\", \"publication_year\": 1869, \"genre\": \"novel\", \"pole\": null, \"object\": {}, \"array\": [], \"publisher\": \"The Russian Messenger\", \"details\": { \"pages\": 1225, \"language\": \"Russian\", \"available_copies\": 5 }, \"categories\": [ \"classic\", \"historical\" ], \"reviews\": [ { \"user\": \"Alex\", \"rating\": 5, \"comment\": \"A true masterpiece.\", \"awards\": [ { \"name\": \"Book of the Year\", \"type\": \"main award\", \"prize\": 1500 }, { \"name\": \"Best Debut\", \"type\": \"special award\", \"prize\": 500 }, { \"name\": \"Readers’ Choice\", \"type\": \"popular award\", \"prize\": 300 }, { \"name\": \"asda\", \"type\": \"popular award\", \"prize\": 300 } ] } ] } ] } }";
+
+        System.out.println(JsonPath.getValue(testJson, "library.books.reviews.awards[(name == \"Book of the Year\" <> name == \"Best Debut\" <> name == \"Readers’ Choice\")]"));
+/*        System.out.println(JsonPath.getValue(json, "*.*.stages[~].mode.distinct()"));
         System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].mode.distinct()"));
         System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].sla.name()"));
-        System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].sla.distinct()"));
+        System.out.println(JsonPath.getValue(json, "*.*.*[(id)][~].sla.distinct()"));*/
 
         //regenTests(json);
     }

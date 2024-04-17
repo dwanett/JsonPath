@@ -4,9 +4,9 @@ import antlr.JsonPathParser;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import jsonPath.errors.ErrorListener;
-import jsonPath.errors.ErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 public class JsonPath {
@@ -56,7 +56,7 @@ public class JsonPath {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         JsonPathParser parser = new JsonPathParser(tokens);
         parser.removeErrorListeners();
-        parser.setErrorHandler(new ErrorStrategy());
+        parser.setErrorHandler(new DefaultErrorStrategy());
         parser.addErrorListener(new ErrorListener());
         ParseTree tree = parser.jsonPath();
         JsonPathAll jsonPathAll = new JsonPathAll();

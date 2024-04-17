@@ -80,27 +80,37 @@ public class Condition extends BaseModel<Condition> {
         if (logicExpressions.size() == 1)
             return curLogicExpression.func.applyAsInt((startBit >> 1) & 1, startBit & 1);
 
-        int leftBit = (startBit >> logicExpressions.size() - curLogicExpression.ordinal()) & 1;
+        int indexLeftBit = logicExpressions.size();
+        int indexRightBit = logicExpressions.size() - 1;
+
+        if (curLogicExpression.ordinal() > 0) {
+            indexRightBit = (int)logicExpressions.stream().filter(x -> x.ordinal() > curLogicExpression.ordinal()).count();
+            indexLeftBit = indexRightBit + 1;
+        }
+
+        int resultLastOperation = startBit >> indexLeftBit;
+        int countProcessBit = 0;
+        int leftBit;
+        int rightBit;
         int result = 0;
 
-
         for (int i = 0; i < logicExpressions.size(); i++) {
-             if (logicExpressions.get(i) == curLogicExpression) {
-                 int indexBit = (logicExpressions.size() - 1) - i - curLogicExpression.ordinal();
-                 indexBit = Math.max(indexBit, 0);
-                 leftBit = curLogicExpression.func.applyAsInt(leftBit, (startBit >> indexBit) & 1);
-                 if (logicExpressions.stream().allMatch(x -> x.equals(curLogicExpression)))
-                     result = leftBit;
-                 else
-                     result |= leftBit;
-             }
-             else {
-                 if (logicExpressions.get(i).ordinal() == curLogicExpression.ordinal() + 1)
-                     result = result << 1;
-                 leftBit = (startBit >> (logicExpressions.size() - 1) - i - curLogicExpression.ordinal()) & 1;
-             }
-         }
+            if (logicExpressions.get(i) == curLogicExpression) {
+                countProcessBit++;
+                result <<= 1;
+                rightBit = startBit >> indexRightBit & 1;
+                resultLastOperation = curLogicExpression.func.applyAsInt(resultLastOperation, rightBit);
+                indexRightBit--;
+            } else if (logicExpressions.get(i).ordinal() > curLogicExpression.ordinal()) {
+                result |= resultLastOperation;
+                leftBit = startBit >> countProcessBit - 1 & 1;
+                indexRightBit = countProcessBit;
+                resultLastOperation = leftBit;
+            }
+        }
+
+         result |= resultLastOperation;
 
         return result;
-     }
+    }
 }
