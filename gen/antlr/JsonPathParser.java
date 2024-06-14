@@ -19,11 +19,11 @@ public class JsonPathParser extends Parser {
 	public static final int
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, STRING=8, FUNCTION=9, 
 		FUNCTIONFORCOMPARE=10, INDEXARRAY=11, MATCHTYPE=12, FLOAT=13, COMPARETYPE=14, 
-		COMPARETYPENOTSTRICT=15, LOGICEXPR=16, DIGIT=17, NAME=18, NO_NAME=19, 
-		ALLINDEX=20, NOT=21, DOT=22, BACK=23, NONMATCH=24, ALLMATCH=25, AND=26, 
-		OR=27, EQUALS=28, NOT_EQUALS=29, LESS=30, LESS_OR_EQUALS=31, GREATER=32, 
-		GREATER_OR_EQUALS=33, SORT=34, SIZE=35, DISTINCT=36, NAMEATTR=37, REG=38, 
-		CONTAINS=39, WS=40;
+		COMPARETYPENOTSTRICT=15, LOGICEXPR=16, INDEXRANGE=17, DIGIT=18, NAME=19, 
+		NO_NAME=20, ALLINDEX=21, NOT=22, DOT=23, BACK=24, NONMATCH=25, ALLMATCH=26, 
+		AND=27, OR=28, EQUALS=29, NOT_EQUALS=30, LESS=31, LESS_OR_EQUALS=32, GREATER=33, 
+		GREATER_OR_EQUALS=34, SORT=35, SIZE=36, DISTINCT=37, NAMEATTR=38, REG=39, 
+		CONTAINS=40, WS=41;
 	public static final int
 		RULE_jsonPath = 0, RULE_jsonPathElement = 1, RULE_filter = 2, RULE_condition = 3, 
 		RULE_priority = 4, RULE_expr = 5;
@@ -37,10 +37,10 @@ public class JsonPathParser extends Parser {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, "'['", "'('", "')]'", "'{'", "'}'", "'null'", "'empty'", null, 
-			null, null, null, null, null, null, null, null, null, null, "'*'", "'~'", 
-			"'!'", "'.'", "'../'", "'nonMatch'", "'allMatch'", "'&&'", "'||'", "'=='", 
-			"'!='", "'<'", "'<='", "'>'", "'>='", "'sort()'", "'size()'", "'distinct()'", 
-			"'name()'"
+			null, null, null, null, null, null, null, null, null, null, null, "'*'", 
+			"'~'", "'!'", "'.'", "'../'", "'nonMatch'", "'allMatch'", "'&&'", "'||'", 
+			"'=='", "'!='", "'<'", "'<='", "'>'", "'>='", "'sort()'", "'size()'", 
+			"'distinct()'", "'name()'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -48,9 +48,9 @@ public class JsonPathParser extends Parser {
 		return new String[] {
 			null, null, null, null, null, null, null, null, "STRING", "FUNCTION", 
 			"FUNCTIONFORCOMPARE", "INDEXARRAY", "MATCHTYPE", "FLOAT", "COMPARETYPE", 
-			"COMPARETYPENOTSTRICT", "LOGICEXPR", "DIGIT", "NAME", "NO_NAME", "ALLINDEX", 
-			"NOT", "DOT", "BACK", "NONMATCH", "ALLMATCH", "AND", "OR", "EQUALS", 
-			"NOT_EQUALS", "LESS", "LESS_OR_EQUALS", "GREATER", "GREATER_OR_EQUALS", 
+			"COMPARETYPENOTSTRICT", "LOGICEXPR", "INDEXRANGE", "DIGIT", "NAME", "NO_NAME", 
+			"ALLINDEX", "NOT", "DOT", "BACK", "NONMATCH", "ALLMATCH", "AND", "OR", 
+			"EQUALS", "NOT_EQUALS", "LESS", "LESS_OR_EQUALS", "GREATER", "GREATER_OR_EQUALS", 
 			"SORT", "SIZE", "DISTINCT", "NAMEATTR", "REG", "CONTAINS", "WS"
 		};
 	}
@@ -195,7 +195,7 @@ public class JsonPathParser extends Parser {
 			{
 			setState(15);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 786688L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 1573120L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -731,7 +731,7 @@ public class JsonPathParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001(q\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002\u0002"+
+		"\u0004\u0001)q\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002\u0002"+
 		"\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002\u0005"+
 		"\u0007\u0005\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0001\u0001\u0001"+
 		"\u0003\u0001\u0012\b\u0001\u0001\u0001\u0003\u0001\u0015\b\u0001\u0001"+
@@ -750,8 +750,8 @@ public class JsonPathParser extends Parser {
 		"\u000b\u0005\f\u0005b\u0001\u0005\u0001\u0005\u0001\u0005\u0003\u0005"+
 		"h\b\u0005\u0001\u0005\u0001\u0005\u0003\u0005l\b\u0005\u0001\u0005\u0003"+
 		"\u0005o\b\u0005\u0001\u0005\u0000\u0000\u0006\u0000\u0002\u0004\u0006"+
-		"\b\n\u0000\u0003\u0002\u0000\b\b\u0012\u0013\u0001\u0000\u000e\u000f\u0002"+
-		"\u0000\r\r\u0011\u0011\u007f\u0000\f\u0001\u0000\u0000\u0000\u0002\u000f"+
+		"\b\n\u0000\u0003\u0002\u0000\b\b\u0013\u0014\u0001\u0000\u000e\u000f\u0002"+
+		"\u0000\r\r\u0012\u0012\u007f\u0000\f\u0001\u0000\u0000\u0000\u0002\u000f"+
 		"\u0001\u0000\u0000\u0000\u0004\u001d\u0001\u0000\u0000\u0000\u0006C\u0001"+
 		"\u0000\u0000\u0000\bE\u0001\u0000\u0000\u0000\nn\u0001\u0000\u0000\u0000"+
 		"\f\r\u0003\u0002\u0001\u0000\r\u000e\u0005\u0000\u0000\u0001\u000e\u0001"+
@@ -760,7 +760,7 @@ public class JsonPathParser extends Parser {
 		"\u0001\u0000\u0000\u0000\u0012\u0014\u0001\u0000\u0000\u0000\u0013\u0015"+
 		"\u0005\u000b\u0000\u0000\u0014\u0013\u0001\u0000\u0000\u0000\u0014\u0015"+
 		"\u0001\u0000\u0000\u0000\u0015\u001b\u0001\u0000\u0000\u0000\u0016\u0019"+
-		"\u0005\u0016\u0000\u0000\u0017\u001a\u0003\u0002\u0001\u0000\u0018\u001a"+
+		"\u0005\u0017\u0000\u0000\u0017\u001a\u0003\u0002\u0001\u0000\u0018\u001a"+
 		"\u0005\t\u0000\u0000\u0019\u0017\u0001\u0000\u0000\u0000\u0019\u0018\u0001"+
 		"\u0000\u0000\u0000\u001a\u001c\u0001\u0000\u0000\u0000\u001b\u0016\u0001"+
 		"\u0000\u0000\u0000\u001b\u001c\u0001\u0000\u0000\u0000\u001c\u0003\u0001"+
@@ -791,11 +791,11 @@ public class JsonPathParser extends Parser {
 		"\u0000WX\u0005\b\u0000\u0000Xo\u0001\u0000\u0000\u0000YZ\u0003\u0002\u0001"+
 		"\u0000Z[\u0005\u000e\u0000\u0000[\\\u0005\n\u0000\u0000\\o\u0001\u0000"+
 		"\u0000\u0000]^\u0003\u0002\u0001\u0000^`\u0005\u000e\u0000\u0000_a\u0005"+
-		"\u0017\u0000\u0000`_\u0001\u0000\u0000\u0000ab\u0001\u0000\u0000\u0000"+
+		"\u0018\u0000\u0000`_\u0001\u0000\u0000\u0000ab\u0001\u0000\u0000\u0000"+
 		"b`\u0001\u0000\u0000\u0000bc\u0001\u0000\u0000\u0000cd\u0001\u0000\u0000"+
-		"\u0000de\u0003\u0002\u0001\u0000eo\u0001\u0000\u0000\u0000fh\u0005\u0015"+
+		"\u0000de\u0003\u0002\u0001\u0000eo\u0001\u0000\u0000\u0000fh\u0005\u0016"+
 		"\u0000\u0000gf\u0001\u0000\u0000\u0000gh\u0001\u0000\u0000\u0000hi\u0001"+
-		"\u0000\u0000\u0000io\u0005\n\u0000\u0000jl\u0005\u0015\u0000\u0000kj\u0001"+
+		"\u0000\u0000\u0000io\u0005\n\u0000\u0000jl\u0005\u0016\u0000\u0000kj\u0001"+
 		"\u0000\u0000\u0000kl\u0001\u0000\u0000\u0000lm\u0001\u0000\u0000\u0000"+
 		"mo\u0003\u0002\u0001\u0000nI\u0001\u0000\u0000\u0000nM\u0001\u0000\u0000"+
 		"\u0000nQ\u0001\u0000\u0000\u0000nU\u0001\u0000\u0000\u0000nY\u0001\u0000"+

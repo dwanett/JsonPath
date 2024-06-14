@@ -13,6 +13,12 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
 
     private String indexArray;
 
+    private boolean isIndexRange = false;
+
+    private int startIndexRange;
+
+    private int endIndexRange;
+
     private Filter filter = null;
 
     private JsonPathElement nextJsonPathElement = null;
@@ -25,9 +31,20 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
         else if (ctx.NO_NAME() != null)
             name = ctx.NO_NAME().getText();
         else
-            name = ctx.STRING().getText().replaceAll("\"","");
+            name = ctx.STRING().getText().replaceAll("\"", "");
 
         indexArray = ctx.INDEXARRAY() != null ? ctx.INDEXARRAY().getText().replaceAll("\\[|\\]", "") : null;
+
+        if (indexArray != null) {
+            String[] indexRange = indexArray.split(",");
+
+            isIndexRange = indexRange.length > 1;
+
+            if (isIndexRange) {
+                startIndexRange = Integer.parseInt(indexRange[0]);
+                endIndexRange = Integer.parseInt(indexRange[1]);
+            }
+        }
 
         if (ctx.filter() != null) {
             filter = new Filter();
@@ -63,17 +80,16 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
             if (!(element instanceof JsonArray)) {
                 diagnosticInformation = new DiagnosticInformation(element, jsonPath, this, null);
                 return null;
-            }
-            else
+            } else
                 filter.filter(element);
         }
 
         curJson = getJsonElement(curJson);
         if ((indexArray == null
-                || !indexArray.equals(BaseModel.getLiteralValue(JsonPathParser.ALLINDEX))
+                || (!indexArray.equals(BaseModel.getLiteralValue(JsonPathParser.ALLINDEX)) && isIndexRange == false)
                 || (curJson != null && curJson.isJsonObject()))
                 && nextJsonPathElement != null)
-                results.push(nextJsonPathElement.read(curJson));
+            results.push(nextJsonPathElement.read(curJson));
         else
             results.push(curJson);
         if (nextJsonPathElement == null && curJson != null)
@@ -85,16 +101,14 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
 
     private JsonElement getJsonElement(JsonElement json) {
         if (json instanceof JsonArray) {
-            if (indexArray != null && indexArray.equals(BaseModel.getLiteralValue(JsonPathParser.ALLINDEX))) {
+            if (indexArray != null && ((indexArray.equals(BaseModel.getLiteralValue(JsonPathParser.ALLINDEX))) || isIndexRange)) {
                 JsonArray jsonArray = new JsonArray();
-                for (int i = 0; i < json.getAsJsonArray().size(); i++) {
-                    indexArray = String.valueOf(i);
-                    Filter saveFilter = filter;
-                    filter = null;
-                    jsonArray.add(read(json));
-                    filter = saveFilter;
-                }
-                indexArray = BaseModel.getLiteralValue(JsonPathParser.ALLINDEX);
+
+                if (indexArray.equals(BaseModel.getLiteralValue(JsonPathParser.ALLINDEX)))
+                    jsonArray = readRangeElement(json, 0, json.getAsJsonArray().size());
+                else if (isIndexRange)
+                    jsonArray = readRangeElement(json, startIndexRange, endIndexRange);
+
                 results.push(jsonArray);
                 return jsonArray;
             } else if (nextJsonPathElement != null || indexArray != null) {
@@ -118,6 +132,31 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
         else if (json instanceof JsonNull)
             return json.getAsJsonNull();
         return json;
+    }
+
+    private JsonArray readRangeElement(JsonElement json, int start, int end) {
+        JsonArray jsonArray = new JsonArray();
+        boolean saveIsIndexRange = isIndexRange;
+        String saveIndexArray = indexArray;
+        isIndexRange = false;
+
+        if (start < 0)
+            start = 0;
+        if (end > json.getAsJsonArray().size())
+            end = json.getAsJsonArray().size();
+
+        for (int i = start; i < end; i++) {
+            indexArray = String.valueOf(i);
+            Filter saveFilter = filter;
+            filter = null;
+            jsonArray.add(read(json));
+            filter = saveFilter;
+        }
+
+        isIndexRange = saveIsIndexRange;
+        indexArray = saveIndexArray;
+
+        return jsonArray;
     }
 
     private void findPath(JsonElement json) {
