@@ -26,22 +26,33 @@ public class JsonPath {
     }
 
     public static String getValue(JsonElement json, String jsonPath) {
+        return BaseModel.convertJsonToString(getValueGson(json, jsonPath));
+    }
+
+    public static String getValue(String json, String jsonPath) {
+        return BaseModel.convertJsonToString(getValueGson(json, jsonPath));
+    }
+
+    public String getValue(String jsonPath) {
+        return BaseModel.convertJsonToString(getValueGson(jsonPath));
+    }
+
+    public static JsonElement getValueGson(JsonElement json, String jsonPath) {
         JsonPathAll jsonPathAll = createThree(jsonPath);
-        String result = jsonPathAll.read(json);
+        JsonElement result = jsonPathAll.read(json);
         diagnosticInformationStatic = jsonPathAll.diagnosticInformation;
         return result;
     }
 
-    public static String getValue(String json, String jsonPath) {
-        return getValue(new Gson().fromJson(json, JsonElement.class), jsonPath);
+    public static JsonElement getValueGson(String json, String jsonPath) {
+        return getValueGson(new Gson().fromJson(json, JsonElement.class), jsonPath);
     }
 
-    public String getValue(String jsonPath) {
-        String result = getValue(json, jsonPath);
+    public JsonElement getValueGson(String jsonPath) {
+        JsonElement result = getValueGson(json, jsonPath);
         diagnosticInformation = diagnosticInformationStatic;
         return result;
     }
-
 
     public static DiagnosticInformation getDiagnosticInformationStatic() {
         return diagnosticInformationStatic;

@@ -19,7 +19,7 @@ public class JsonPathAll extends BaseModel<JsonPathAll> {
         return this;
     }
 
-    public String read(JsonElement json) {
+    public JsonElement read(JsonElement json) {
         immutableJson = json.deepCopy();
         JsonElement result = jsonPathElement.read(json.deepCopy());
 
@@ -28,7 +28,7 @@ public class JsonPathAll extends BaseModel<JsonPathAll> {
             result = resultObj instanceof JsonPrimitive ? (JsonPrimitive)resultObj : new JsonPrimitive(String.valueOf(resultObj));
         }
 
-        return convertJsonToString(result);
+        return result;
     }
 
     public JsonPathElement getJsonPathElement() {
