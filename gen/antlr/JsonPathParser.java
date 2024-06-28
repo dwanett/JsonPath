@@ -38,7 +38,7 @@ public class JsonPathParser extends Parser {
 		return new String[] {
 			null, "'['", "'('", "')]'", "'{'", "'}'", "'null'", "'empty'", null, 
 			null, null, null, null, null, null, null, null, null, null, null, "'*'", 
-			"'~'", "'!'", "'.'", "'../'", "'nonMatch'", "'allMatch'", "'&&'", "'||'", 
+			"'~'", "'!'", "'.'", "'../'", "'nonMatch'", "'allMatch'", "'&&'", "'<>'", 
 			"'=='", "'!='", "'<'", "'<='", "'>'", "'>='", "'sort()'", "'size()'", 
 			"'distinct()'", "'name()'"
 		};

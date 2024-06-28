@@ -13,14 +13,14 @@ public class JsonPathAll extends BaseModel<JsonPathAll> {
 
     @Override
     public JsonPathAll visitJsonPath(JsonPathParser.JsonPathContext ctx) {
-        jsonPath = this;
+        jsonPath.set(this);
         jsonPathElement = ctx.jsonPathElement() != null ? new JsonPathElement().visit(ctx.jsonPathElement()) : null;
         jsonPathElement.prevJsonPathElement = null;
         return this;
     }
 
     public JsonElement read(JsonElement json) {
-        immutableJson = json.deepCopy();
+        immutableJson.set(json.deepCopy());
         JsonElement result = jsonPathElement.read(json.deepCopy());
 
         if (function != null) {

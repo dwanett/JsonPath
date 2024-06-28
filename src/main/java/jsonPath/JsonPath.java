@@ -40,7 +40,7 @@ public class JsonPath {
     public static JsonElement getValueGson(JsonElement json, String jsonPath) {
         JsonPathAll jsonPathAll = createThree(jsonPath);
         JsonElement result = jsonPathAll.read(json);
-        diagnosticInformationStatic = jsonPathAll.diagnosticInformation;
+        diagnosticInformationStatic = jsonPathAll.diagnosticInformation.get();
         return result;
     }
 

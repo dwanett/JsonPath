@@ -49,7 +49,7 @@ public class JsonPathLexer extends Lexer {
 		return new String[] {
 			null, "'['", "'('", "')]'", "'{'", "'}'", "'null'", "'empty'", null, 
 			null, null, null, null, null, null, null, null, null, null, null, "'*'", 
-			"'~'", "'!'", "'.'", "'../'", "'nonMatch'", "'allMatch'", "'&&'", "'||'", 
+			"'~'", "'!'", "'.'", "'../'", "'nonMatch'", "'allMatch'", "'&&'", "'<>'", 
 			"'=='", "'!='", "'<'", "'<='", "'>'", "'>='", "'sort()'", "'size()'", 
 			"'distinct()'", "'name()'"
 		};
@@ -266,7 +266,7 @@ public class JsonPathLexer extends Lexer {
 		"\u0000\u0000\u00cb\u00cc\u0005t\u0000\u0000\u00cc\u00cd\u0005c\u0000\u0000"+
 		"\u00cd\u00ce\u0005h\u0000\u0000\u00ce6\u0001\u0000\u0000\u0000\u00cf\u00d0"+
 		"\u0005&\u0000\u0000\u00d0\u00d1\u0005&\u0000\u0000\u00d18\u0001\u0000"+
-		"\u0000\u0000\u00d2\u00d3\u0005|\u0000\u0000\u00d3\u00d4\u0005|\u0000\u0000"+
+		"\u0000\u0000\u00d2\u00d3\u0005<\u0000\u0000\u00d3\u00d4\u0005>\u0000\u0000"+
 		"\u00d4:\u0001\u0000\u0000\u0000\u00d5\u00d6\u0005=\u0000\u0000\u00d6\u00d7"+
 		"\u0005=\u0000\u0000\u00d7<\u0001\u0000\u0000\u0000\u00d8\u00d9\u0005!"+
 		"\u0000\u0000\u00d9\u00da\u0005=\u0000\u0000\u00da>\u0001\u0000\u0000\u0000"+

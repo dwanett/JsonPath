@@ -9,15 +9,15 @@ import java.util.Stack;
 
 public class BaseModel<T> extends JsonPathBaseVisitor<T> {
 
-    protected static JsonElement immutableJson;
+    protected static ThreadLocal<JsonElement> immutableJson = new ThreadLocal<>();
 
-    protected static Stack<JsonElement> results = new Stack<>();
+    protected static ThreadLocal<Stack<JsonElement>> results = ThreadLocal.withInitial(() -> new Stack<>());
 
-    protected static JsonPathAll jsonPath;
+    protected static ThreadLocal<JsonPathAll> jsonPath = new ThreadLocal<>();
 
     protected JsonPathElement prevJsonPathElement;
 
-    protected static DiagnosticInformation diagnosticInformation;
+    protected static ThreadLocal<DiagnosticInformation> diagnosticInformation = new ThreadLocal<>();
 
     public static String getLiteralValue(int value) {
         return JsonPathParser.VOCABULARY.getLiteralName(value)

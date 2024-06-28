@@ -148,7 +148,7 @@ public class Expression extends BaseModel<Expression> {
             rootJsonPathElement = jsonPathElementSecond;
         }
 
-        String result = convertJsonToString(rootJsonPathElement.read(immutableJson));
+        String result = convertJsonToString(rootJsonPathElement.read(immutableJson.get()));
         curJsonPathElement.replaceNextJsonPathElement(saveNextJsonPathElement);
         return result;
     }

@@ -65,7 +65,7 @@ ALLMATCH : 'allMatch';
 
 AND : '&&';
 
-OR : '||';
+OR : '<>';
 
 EQUALS : '==';
 

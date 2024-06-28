@@ -61,13 +61,13 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
 
         if (ctx.FUNCTION() != null) {
             if (BaseModel.getLiteralValue(JsonPathParser.SORT).equals(ctx.FUNCTION().getText()))
-                jsonPath.function = new SortFunction();
+                jsonPath.get().function = new SortFunction();
             else if (BaseModel.getLiteralValue(JsonPathParser.SIZE).equals(ctx.FUNCTION().getText()))
-                jsonPath.function = new SizeFunction();
+                jsonPath.get().function = new SizeFunction();
             else if (BaseModel.getLiteralValue(JsonPathParser.DISTINCT).equals(ctx.FUNCTION().getText()))
-                jsonPath.function = new DistinctFunction();
+                jsonPath.get().function = new DistinctFunction();
             else if (BaseModel.getLiteralValue(JsonPathParser.NAMEATTR).equals(ctx.FUNCTION().getText()))
-                jsonPath.function = new NameFunction();
+                jsonPath.get().function = new NameFunction();
         }
         return this;
     }
@@ -78,7 +78,7 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
                 findPath(curJson);
             JsonElement element = curJson.getAsJsonObject().get(name);
             if (!(element instanceof JsonArray)) {
-                diagnosticInformation = new DiagnosticInformation(element, jsonPath, this, null);
+                diagnosticInformation.set(new DiagnosticInformation(element, jsonPath.get(), this, null));
                 return null;
             } else
                 filter.filter(element);
@@ -89,14 +89,14 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
                 || (!indexArray.equals(BaseModel.getLiteralValue(JsonPathParser.ALLINDEX)) && isIndexRange == false)
                 || (curJson != null && curJson.isJsonObject()))
                 && nextJsonPathElement != null)
-            results.push(nextJsonPathElement.read(curJson));
+            results.get().push(nextJsonPathElement.read(curJson));
         else
-            results.push(curJson);
+            results.get().push(curJson);
         if (nextJsonPathElement == null && curJson != null)
-            diagnosticInformation = new DiagnosticInformation(curJson, jsonPath, null, null);
+            diagnosticInformation.set(new DiagnosticInformation(curJson, jsonPath.get(), null, null));
         else if (curJson == null)
-            diagnosticInformation = new DiagnosticInformation(curJson, jsonPath, this, null);
-        return results.pop();
+            diagnosticInformation.set(new DiagnosticInformation(curJson, jsonPath.get(), this, null));
+        return results.get().pop();
     }
 
     private JsonElement getJsonElement(JsonElement json) {
@@ -109,14 +109,14 @@ public class JsonPathElement extends BaseModel<JsonPathElement> {
                 else if (isIndexRange)
                     jsonArray = readRangeElement(json, startIndexRange, endIndexRange);
 
-                results.push(jsonArray);
+                results.get().push(jsonArray);
                 return jsonArray;
             } else if (nextJsonPathElement != null || indexArray != null) {
                 try {
                     return json.getAsJsonArray().get(indexArray != null ? Integer.parseInt(indexArray) : 0);
                 } catch (Exception e) {
-                    results.push(new JsonObject());
-                    return results.peek();
+                    results.get().push(new JsonObject());
+                    return results.get().peek();
                 }
             }
         } else if (json instanceof JsonObject) {
